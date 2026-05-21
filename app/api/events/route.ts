@@ -22,3 +22,23 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function GET() {
+  try {
+    await connectDB();
+    const events = await Event.find().populate("organization");
+    return NextResponse.json({
+      success: true,
+      events,
+    });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to fetch events",
+      },
+      { status: 500 }
+    );
+  }
+}
