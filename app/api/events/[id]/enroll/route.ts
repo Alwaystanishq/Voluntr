@@ -1,5 +1,3 @@
-import { NextResponse } from "next/server";
-
 import { connectDB } from "@/lib/mongodb";
 import Event from "@/models/event";
 
@@ -9,28 +7,61 @@ export async function POST(
 ) {
   try {
     await connectDB();
-    const { userId } = await req.json();
-    const event = await Event.findByIdAndUpdate(
-      params.id,
-      {
-        $addToSet: {
-          enrolledUsers: userId,
+
+    const body = await req.json();
+
+    const { userId } = body;
+
+    const event = await Event.findById(params.id);
+
+    if (!event) {
+      return Response.json(
+        {
+          success: false,
+          message: "Event not found",
         },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    const alreadyEnrolled = event.enrolledUsers.includes(userId);
+
+    if (alreadyEnrolled) {
+      return Response.json(
+        {
+          success: false,
+          message: "User already enrolled",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    event.enrolledUsers.push(userId);
+
+    await event.save();
+
+    return Response.json(
+      {
+        success: true,
+        message: "Enrolled successfully",
       },
-      { new: true },
+      {
+        status: 200,
+      },
     );
-    return NextResponse.json({
-      success: true,
-      event,
-    });
   } catch (error) {
-    console.log(error);
-    return NextResponse.json(
+    return Response.json(
       {
         success: false,
-        message: "Failed to enroll user",
+        message: "Enrollment failed",
       },
-      { status: 500 },
+      {
+        status: 500,
+      },
     );
   }
 }

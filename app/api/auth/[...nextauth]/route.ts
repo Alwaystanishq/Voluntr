@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/user";
 
@@ -8,26 +9,33 @@ const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: "credentials",
+
       credentials: {
         email: {},
         password: {},
       },
+
       async authorize(credentials) {
         try {
           await connectDB();
+
           const user = await User.findOne({
             email: credentials?.email,
           });
+
           if (!user) {
             throw new Error("Invalid credentials");
           }
+
           const isPasswordCorrect = await bcrypt.compare(
             credentials!.password,
-            user.password
+            user.password,
           );
+
           if (!isPasswordCorrect) {
             throw new Error("Invalid credentials");
           }
+
           return {
             id: user._id.toString(),
             name: user.name,
@@ -39,7 +47,27 @@ const handler = NextAuth({
       },
     }),
   ],
+
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+      }
+
+      return session;
+    },
+  },
+
   secret: process.env.NEXTAUTH_SECRET,
+
   session: {
     strategy: "jwt",
   },
