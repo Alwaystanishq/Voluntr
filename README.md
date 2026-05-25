@@ -1,36 +1,177 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Voluntr
 
-## Getting Started
+A full-stack volunteer event platform built with Next.js, MongoDB, NextAuth, and Tailwind CSS.
 
-First, run the development server:
+## Features
+
+### Authentication
+
+* User signup and login
+* NGO signup and login
+* Secure password hashing with bcrypt
+* Session management using NextAuth
+* Protected routes with middleware
+
+### Event Management
+
+* Create events
+* Explore all events
+* View event details
+* Edit events
+* Delete events
+* Enroll in events
+* Prevent duplicate enrollments
+
+### NGO Dashboard
+
+* View created events
+* Edit events
+* Delete events
+* View enrolled users count
+
+---
+
+# Tech Stack
+
+## Frontend
+
+* Next.js
+* TypeScript
+* Tailwind CSS
+* Axios
+
+## Backend
+
+* Next.js API Routes
+* MongoDB
+* Mongoose
+* NextAuth
+* bcryptjs
+
+---
+
+# Folder Structure
+
+```bash
+app/
+ ├── api/
+ ├── dashboard/
+ ├── explore/
+ ├── create-event/
+ ├── edit-event/
+ ├── ngo/
+ ├── user/
+ └── page.tsx
+
+components/
+ └── Navbar.tsx
+
+lib/
+ └── mongodb.ts
+
+models/
+ ├── user.ts
+ ├── organization.ts
+ └── event.ts
+
+providers/
+ └── SessionProvider.tsx
+```
+
+---
+
+# Installation
+
+## Clone the repository
+
+```bash
+git clone <your-repo-url>
+```
+
+## Install dependencies
+
+```bash
+npm install
+```
+
+## Create `.env` file
+
+```env
+MONGODB_URI=your_mongodb_uri
+NEXTAUTH_SECRET=your_secret
+NEXTAUTH_URL=http://localhost:3000
+```
+
+## Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# API Routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Auth
 
-## Learn More
+```bash
+/api/auth/[...nextauth]
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Users
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+/api/users
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Organizations
 
-## Deploy on Vercel
+```bash
+/api/organizations
+/api/organizations/[id]
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Events
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+/api/events
+/api/events/[id]
+/api/events/[id]/enroll
+```
+
+---
+
+# Pages
+
+## Public Pages
+
+* Landing Page
+* User Signup
+* User Login
+* NGO Signup
+* NGO Login
+
+## Protected Pages
+
+* Explore Events
+* Event Details
+* Create Event
+* Edit Event
+* NGO Dashboard
+
+---
+
+# Future Improvements
+
+* Role-based UI
+* Event images
+* Search and filtering
+* Better responsive design
+* Toast notifications
+* Deployment
+
+---
+
+# Author
+
+Built by Tanishq using Next.js and MongoDB.

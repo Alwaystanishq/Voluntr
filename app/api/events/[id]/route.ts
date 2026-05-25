@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 import { connectDB } from "@/lib/mongodb";
+
 import Event from "@/models/event";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     await connectDB();
@@ -22,7 +27,7 @@ export async function GET(
         },
         {
           status: 404,
-        }
+        },
       );
     }
 
@@ -33,7 +38,7 @@ export async function GET(
       },
       {
         status: 200,
-      }
+      },
     );
   } catch (error) {
     console.log(error);
@@ -45,29 +50,35 @@ export async function GET(
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     await connectDB();
 
-    const body = await req.json();
+    const session = await getServerSession(authOptions);
 
-    const updatedEvent = await Event.findByIdAndUpdate(
-      params.id,
-      body,
-      {
-        new: true,
-      }
-    );
+    if (!session) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        },
+      );
+    }
 
-    if (!updatedEvent) {
+    const event = await Event.findById(params.id);
+
+    if (!event) {
       return NextResponse.json(
         {
           success: false,
@@ -75,9 +86,27 @@ export async function PUT(
         },
         {
           status: 404,
-        }
+        },
       );
     }
+
+    if (event.organization.toString() !== session.user.id) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Forbidden",
+        },
+        {
+          status: 403,
+        },
+      );
+    }
+
+    const body = await req.json();
+
+    const updatedEvent = await Event.findByIdAndUpdate(params.id, body, {
+      new: true,
+    });
 
     return NextResponse.json(
       {
@@ -86,7 +115,7 @@ export async function PUT(
       },
       {
         status: 200,
-      }
+      },
     );
   } catch (error) {
     console.log(error);
@@ -98,22 +127,35 @@ export async function PUT(
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     await connectDB();
 
-    const deletedEvent =
-      await Event.findByIdAndDelete(params.id);
+    const session = await getServerSession(authOptions);
 
-    if (!deletedEvent) {
+    if (!session) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        },
+      );
+    }
+
+    const event = await Event.findById(params.id);
+
+    if (!event) {
       return NextResponse.json(
         {
           success: false,
@@ -121,9 +163,23 @@ export async function DELETE(
         },
         {
           status: 404,
-        }
+        },
       );
     }
+
+    if (event.organization.toString() !== session.user.id) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Forbidden",
+        },
+        {
+          status: 403,
+        },
+      );
+    }
+
+    await Event.findByIdAndDelete(params.id);
 
     return NextResponse.json(
       {
@@ -132,7 +188,7 @@ export async function DELETE(
       },
       {
         status: 200,
-      }
+      },
     );
   } catch (error) {
     console.log(error);
@@ -144,7 +200,7 @@ export async function DELETE(
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }

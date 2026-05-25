@@ -5,7 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/user";
 
-const handler = NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -16,40 +16,36 @@ const handler = NextAuth({
       },
 
       async authorize(credentials) {
-        try {
-          await connectDB();
+        await connectDB();
 
-          const user = await User.findOne({
-            email: credentials?.email,
-          });
+        const user = await User.findOne({
+          email: credentials?.email,
+        });
 
-          if (!user) {
-            throw new Error("Invalid credentials");
-          }
-
-          const isPasswordCorrect = await bcrypt.compare(
-            credentials!.password,
-            user.password,
-          );
-
-          if (!isPasswordCorrect) {
-            throw new Error("Invalid credentials");
-          }
-
-          return {
-            id: user._id.toString(),
-            name: user.name,
-            email: user.email,
-          };
-        } catch (error) {
-          throw new Error("Login failed");
+        if (!user) {
+          throw new Error("Invalid credentials");
         }
+
+        const isPasswordCorrect = await bcrypt.compare(
+          credentials!.password,
+          user.password
+        );
+
+        if (!isPasswordCorrect) {
+          throw new Error("Invalid credentials");
+        }
+
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+        };
       },
     }),
   ],
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
         token.id = user.id;
       }
@@ -57,9 +53,9 @@ const handler = NextAuth({
       return token;
     },
 
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (session.user) {
-        session.user.id = token.id as string;
+        session.user.id = token.id;
       }
 
       return session;
@@ -69,8 +65,10 @@ const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
 
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
   },
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
