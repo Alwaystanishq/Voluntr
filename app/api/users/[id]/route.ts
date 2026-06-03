@@ -6,14 +6,19 @@ import Event from "@/models/event";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
-    const user = await User.findById(params.id);
+
+    const { id } = await params;
+
+    const user = await User.findById(id);
+
     const enrolledEvents = await Event.find({
-      enrolledUsers: params.id,
+      enrolledUsers: id,
     });
+
     return NextResponse.json({
       success: true,
       user,
@@ -21,61 +26,83 @@ export async function GET(
     });
   } catch (error) {
     console.log(error);
+
     return NextResponse.json(
       {
         success: false,
         message: "Failed to fetch user",
       },
-      { status: 500 },
+      {
+        status: 500,
+      }
     );
   }
 }
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
+
+    const { id } = await params;
+
     const body = await req.json();
-    const updatedUser = await User.findByIdAndUpdate(params.id, body, {
-      new: true,
-    });
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      body,
+      {
+        new: true,
+      }
+    );
+
     return NextResponse.json({
       success: true,
       updatedUser,
     });
   } catch (error) {
     console.log(error);
+
     return NextResponse.json(
       {
         success: false,
         message: "Failed to update user",
       },
-      { status: 500 },
+      {
+        status: 500,
+      }
     );
   }
 }
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
-    await User.findByIdAndDelete(params.id);
+
+    const { id } = await params;
+
+    await User.findByIdAndDelete(id);
+
     return NextResponse.json({
       success: true,
       message: "User deleted successfully",
     });
   } catch (error) {
     console.log(error);
+
     return NextResponse.json(
       {
         success: false,
         message: "Failed to delete user",
       },
-      { status: 500 },
+      {
+        status: 500,
+      }
     );
   }
 }
