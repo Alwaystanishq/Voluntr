@@ -28,6 +28,7 @@ export default function NGOSignupPage() {
         router.push("/ngo/login");
       }
     } catch (error) {
+      console.log(error);
       alert("Signup failed");
     }
   };
@@ -49,7 +50,7 @@ export default function NGOSignupPage() {
             placeholder="Organization Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-orange-400 placeholder:text-black"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black placeholder:text-gray-500 outline-none focus:border-orange-400"
             required
           />
 
@@ -58,7 +59,7 @@ export default function NGOSignupPage() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-orange-400 placeholder:text-black"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black placeholder:text-gray-500 outline-none focus:border-orange-400"
             required
           />
 
@@ -66,7 +67,7 @@ export default function NGOSignupPage() {
             placeholder="Organization Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-orange-400 placeholder:text-black resize-none h-28"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black placeholder:text-gray-500 outline-none focus:border-orange-400 resize-none h-28"
           />
 
           <input
@@ -74,7 +75,7 @@ export default function NGOSignupPage() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-orange-400 placeholder:text-black"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black placeholder:text-gray-500 outline-none focus:border-orange-400"
             required
           />
 
@@ -88,7 +89,10 @@ export default function NGOSignupPage() {
 
         <p className="text-center text-gray-600 mt-6">
           Already have an account?{" "}
-          <Link href="/ngo/login" className="text-orange-500 font-semibold">
+          <Link
+            href="/ngo/login"
+            className="text-orange-500 font-semibold hover:underline"
+          >
             Login
           </Link>
         </p>

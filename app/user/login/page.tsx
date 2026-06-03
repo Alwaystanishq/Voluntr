@@ -44,7 +44,7 @@ export default function UserLoginPage() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-orange-400 placeholder:text-black"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black placeholder:text-gray-500 outline-none focus:border-orange-400"
             required
           />
 
@@ -53,7 +53,7 @@ export default function UserLoginPage() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-orange-400 placeholder:text-black"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black placeholder:text-gray-500 outline-none focus:border-orange-400"
             required
           />
 
@@ -67,7 +67,10 @@ export default function UserLoginPage() {
 
         <p className="text-center text-gray-600 mt-6">
           Don&apos;t have an account?{" "}
-          <Link href="/user/signup" className="text-orange-500 font-semibold">
+          <Link
+            href="/user/signup"
+            className="text-orange-500 font-semibold hover:underline"
+          >
             Sign Up
           </Link>
         </p>
