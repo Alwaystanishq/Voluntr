@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
-
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
 import { connectDB } from "@/lib/mongodb";
-
 import Event from "@/models/event";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
 
-    const event = await Event.findById(params.id)
+    const { id } = await params;
+
+    const event = await Event.findById(id)
       .populate("organization")
       .populate("enrolledUsers");
 
@@ -25,9 +24,7 @@ export async function GET(
           success: false,
           message: "Event not found",
         },
-        {
-          status: 404,
-        },
+        { status: 404 },
       );
     }
 
@@ -36,9 +33,7 @@ export async function GET(
         success: true,
         event,
       },
-      {
-        status: 200,
-      },
+      { status: 200 },
     );
   } catch (error) {
     console.log(error);
@@ -48,19 +43,19 @@ export async function GET(
         success: false,
         message: "Failed to fetch event",
       },
-      {
-        status: 500,
-      },
+      { status: 500 },
     );
   }
 }
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
+
+    const { id } = await params;
 
     const session = await getServerSession(authOptions);
 
@@ -70,13 +65,11 @@ export async function PUT(
           success: false,
           message: "Unauthorized",
         },
-        {
-          status: 401,
-        },
+        { status: 401 },
       );
     }
 
-    const event = await Event.findById(params.id);
+    const event = await Event.findById(id);
 
     if (!event) {
       return NextResponse.json(
@@ -84,9 +77,7 @@ export async function PUT(
           success: false,
           message: "Event not found",
         },
-        {
-          status: 404,
-        },
+        { status: 404 },
       );
     }
 
@@ -96,15 +87,13 @@ export async function PUT(
           success: false,
           message: "Forbidden",
         },
-        {
-          status: 403,
-        },
+        { status: 403 },
       );
     }
 
     const body = await req.json();
 
-    const updatedEvent = await Event.findByIdAndUpdate(params.id, body, {
+    const updatedEvent = await Event.findByIdAndUpdate(id, body, {
       new: true,
     });
 
@@ -113,9 +102,7 @@ export async function PUT(
         success: true,
         updatedEvent,
       },
-      {
-        status: 200,
-      },
+      { status: 200 },
     );
   } catch (error) {
     console.log(error);
@@ -125,19 +112,19 @@ export async function PUT(
         success: false,
         message: "Failed to update event",
       },
-      {
-        status: 500,
-      },
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
+
+    const { id } = await params;
 
     const session = await getServerSession(authOptions);
 
@@ -147,13 +134,11 @@ export async function DELETE(
           success: false,
           message: "Unauthorized",
         },
-        {
-          status: 401,
-        },
+        { status: 401 },
       );
     }
 
-    const event = await Event.findById(params.id);
+    const event = await Event.findById(id);
 
     if (!event) {
       return NextResponse.json(
@@ -161,9 +146,7 @@ export async function DELETE(
           success: false,
           message: "Event not found",
         },
-        {
-          status: 404,
-        },
+        { status: 404 },
       );
     }
 
@@ -173,22 +156,18 @@ export async function DELETE(
           success: false,
           message: "Forbidden",
         },
-        {
-          status: 403,
-        },
+        { status: 403 },
       );
     }
 
-    await Event.findByIdAndDelete(params.id);
+    await Event.findByIdAndDelete(id);
 
     return NextResponse.json(
       {
         success: true,
         message: "Event deleted successfully",
       },
-      {
-        status: 200,
-      },
+      { status: 200 },
     );
   } catch (error) {
     console.log(error);
@@ -198,9 +177,7 @@ export async function DELETE(
         success: false,
         message: "Failed to delete event",
       },
-      {
-        status: 500,
-      },
+      { status: 500 },
     );
   }
 }
