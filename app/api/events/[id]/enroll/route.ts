@@ -3,16 +3,18 @@ import Event from "@/models/event";
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
+
+    const { id } = await params;
 
     const body = await req.json();
 
     const { userId } = body;
 
-    const event = await Event.findById(params.id);
+    const event = await Event.findById(id);
 
     if (!event) {
       return Response.json(
@@ -54,6 +56,8 @@ export async function POST(
       },
     );
   } catch (error) {
+    console.log(error);
+
     return Response.json(
       {
         success: false,
