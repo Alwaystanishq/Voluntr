@@ -6,7 +6,7 @@ import Event from "@/models/event";
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
@@ -15,14 +15,28 @@ export async function GET(
 
     const organization = await Organization.findById(id);
 
+    if (!organization) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Organization not found",
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
     const events = await Event.find({
       organization: id,
     });
 
     return NextResponse.json({
       success: true,
-      organization,
-      events,
+      organization: {
+        ...organization.toObject(),
+        events,
+      },
     });
   } catch (error) {
     console.log(error);
@@ -34,14 +48,14 @@ export async function GET(
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }
 
 export async function PUT(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
@@ -50,14 +64,9 @@ export async function PUT(
 
     const body = await req.json();
 
-    const updatedOrganization =
-      await Organization.findByIdAndUpdate(
-        id,
-        body,
-        {
-          new: true,
-        }
-      );
+    const updatedOrganization = await Organization.findByIdAndUpdate(id, body, {
+      new: true,
+    });
 
     return NextResponse.json({
       success: true,
@@ -73,14 +82,14 @@ export async function PUT(
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
@@ -103,7 +112,7 @@ export async function DELETE(
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }

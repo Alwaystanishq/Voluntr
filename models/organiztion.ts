@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { Schema, models, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 const OrganizationSchema = new Schema(
   {
@@ -21,20 +21,23 @@ const OrganizationSchema = new Schema(
 
     description: {
       type: String,
+      default: "",
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  },
 );
 
-OrganizationSchema.pre("save", async function (this: any, next: any) {
+OrganizationSchema.pre("save", async function (this: any) {
   if (!this.isModified("password")) {
-    return next();
+    return;
   }
 
   this.password = await bcrypt.hash(this.password, 10);
-
-  next();
 });
 
-export default models.Organization ||
-  model("Organization", OrganizationSchema);
+const Organization =
+  models.Organization || model("Organization", OrganizationSchema);
+
+export default Organization;
