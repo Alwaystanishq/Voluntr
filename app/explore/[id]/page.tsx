@@ -1,23 +1,18 @@
 "use client";
 
 import axios from "axios";
-
-import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useSession } from "next-auth/react";
 
 interface EventType {
   _id: string;
-
   title: string;
-
   description: string;
-
   date: string;
-
   enrolledUsers: {
     _id: string;
   }[];
@@ -68,6 +63,18 @@ export default function EventDetailsPage() {
 
       if (res.data.success) {
         setEnrolled(true);
+
+        setEvent((prev) => {
+          if (!prev) return prev;
+
+          return {
+            ...prev,
+            enrolledUsers: [
+              ...prev.enrolledUsers,
+              { _id: session?.user?.id as string },
+            ],
+          };
+        });
       }
 
       alert(res.data.message);
@@ -97,6 +104,7 @@ export default function EventDetailsPage() {
   return (
     <>
       <Navbar />
+
       <main className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-blue-50 px-6 py-10">
         <div className="max-w-4xl mx-auto bg-white p-10 rounded-3xl shadow-xl border border-orange-100">
           <h1 className="text-5xl font-bold text-black mb-6">{event.title}</h1>
@@ -105,21 +113,33 @@ export default function EventDetailsPage() {
             {event.description}
           </p>
 
-          <p className="text-gray-500 text-lg mb-10">
+          <p className="text-gray-500 text-lg mb-4">
             {new Date(event.date).toDateString()}
           </p>
 
-          <button
-            onClick={handleEnroll}
-            disabled={enrolled}
-            className={`px-8 py-3 rounded-xl text-lg font-semibold text-white ${
-              enrolled
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-orange-500 to-red-500"
-            }`}
-          >
-            {enrolled ? "Enrolled" : "Enroll Now"}
-          </button>
+          <p className="text-black font-semibold mb-8">
+            Volunteers Enrolled: {event.enrolledUsers.length}
+          </p>
+
+          {session?.user?.role === "user" ? (
+            <button
+              onClick={handleEnroll}
+              disabled={enrolled}
+              className={`px-8 py-3 rounded-xl text-lg font-semibold text-white ${
+                enrolled
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-orange-500 to-red-500"
+              }`}
+            >
+              {enrolled ? "Enrolled" : "Enroll Now"}
+            </button>
+          ) : (
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <p className="text-blue-700 font-semibold">
+                Total Volunteers Enrolled: {event.enrolledUsers.length}
+              </p>
+            </div>
+          )}
         </div>
       </main>
     </>
