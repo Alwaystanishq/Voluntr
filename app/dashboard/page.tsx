@@ -3,6 +3,7 @@
 import axios from "axios";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { signOut, useSession } from "next-auth/react";
 
@@ -25,12 +26,21 @@ interface OrganizationType {
 
 export default function DashboardPage() {
   const { data: session } = useSession();
+  const router = useRouter();
 
   const [organization, setOrganization] = useState<OrganizationType | null>(
     null,
   );
 
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!session) return;
+
+    if (session.user.role !== "ngo") {
+      router.push("/explore");
+    }
+  }, [session, router]);
 
   useEffect(() => {
     if (!session?.user?.id) return;
@@ -88,6 +98,7 @@ export default function DashboardPage() {
   return (
     <>
       <Navbar />
+
       <main className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-blue-50 px-6 py-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-10">
@@ -140,20 +151,12 @@ export default function DashboardPage() {
                     Enrolled Users: {event.enrolledUsers.length}
                   </p>
 
-                  <div className="flex gap-3">
-                    <Link href={`/edit-event/${event._id}`} className="w-full">
-                      <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-lg">
-                        Edit
-                      </button>
-                    </Link>
-
-                    <button
-                      onClick={() => handleDelete(event._id)}
-                      className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white py-2 rounded-lg"
-                    >
-                      Delete
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => handleDelete(event._id)}
+                    className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white py-2 rounded-lg"
+                  >
+                    Delete
+                  </button>
                 </div>
               ))}
             </div>
