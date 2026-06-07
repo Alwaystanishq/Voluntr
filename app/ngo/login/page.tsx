@@ -21,7 +21,7 @@ export default function NGOLoginPage() {
     });
 
     if (res?.ok) {
-      router.push("/explore");
+      router.push("/dashboard");
     } else {
       alert("Invalid credentials");
     }

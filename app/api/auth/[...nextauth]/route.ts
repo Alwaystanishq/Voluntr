@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/user";
+import Organization from "@/models/organiztion";
 
 export const authOptions = {
   providers: [
@@ -22,24 +23,47 @@ export const authOptions = {
           email: credentials?.email,
         });
 
-        if (!user) {
-          throw new Error("Invalid credentials");
+        if (user) {
+          const isPasswordCorrect = await bcrypt.compare(
+            credentials!.password,
+            user.password,
+          );
+
+          if (!isPasswordCorrect) {
+            throw new Error("Invalid credentials");
+          }
+
+          return {
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            role: "user",
+          };
         }
 
-        const isPasswordCorrect = await bcrypt.compare(
-          credentials!.password,
-          user.password
-        );
+        const organization = await Organization.findOne({
+          email: credentials?.email,
+        });
 
-        if (!isPasswordCorrect) {
-          throw new Error("Invalid credentials");
+        if (organization) {
+          const isPasswordCorrect = await bcrypt.compare(
+            credentials!.password,
+            organization.password,
+          );
+
+          if (!isPasswordCorrect) {
+            throw new Error("Invalid credentials");
+          }
+
+          return {
+            id: organization._id.toString(),
+            name: organization.name,
+            email: organization.email,
+            role: "ngo",
+          };
         }
 
-        return {
-          id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-        };
+        throw new Error("Invalid credentials");
       },
     }),
   ],
@@ -48,6 +72,7 @@ export const authOptions = {
     async jwt({ token, user }: any) {
       if (user) {
         token.id = user.id;
+        token.role = user.role;
       }
 
       return token;
@@ -56,6 +81,7 @@ export const authOptions = {
     async session({ session, token }: any) {
       if (session.user) {
         session.user.id = token.id;
+        session.user.role = token.role;
       }
 
       return session;
