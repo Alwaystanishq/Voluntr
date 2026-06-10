@@ -44,7 +44,7 @@ export default function Navbar() {
             </>
           )}
 
-          {session?.user?.role === "user" && (
+          {session && (
             <Link href="/profile">
               <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-5 py-2 rounded-xl">
                 Profile
