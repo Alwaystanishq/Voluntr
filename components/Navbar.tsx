@@ -2,76 +2,26 @@
 
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
-  const { data: session } = useSession();
-
-  const handleLogout = async () => {
-    await signOut({
-      callbackUrl: "/",
-    });
-  };
-
+  const { data: session, status } = useSession();
+  const pathname = usePathname();
   return (
-    <nav className="w-full bg-white shadow-md border-b border-orange-100 px-6 py-4">
-      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-        <Link href="/">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent cursor-pointer">
-            Voluntr
-          </h1>
-        </Link>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <Link href="/explore">
-            <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-xl">
-              Explore
-            </button>
-          </Link>
-
-          {session?.user?.role === "user" && (
-            <Link href="/volunteer/dashboard" className="rounded-xl bg-orange-500 px-5 py-2 text-white">Dashboard</Link>
-          )}
-
-          {session?.user?.role === "ngo" && (
-            <>
-              <Link href="/dashboard">
-                <button className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-5 py-2 rounded-xl">
-                  Dashboard
-                </button>
-              </Link>
-
-              <Link href="/create-event">
-                <button className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2 rounded-xl">
-                  Create Event
-                </button>
-              </Link>
-            </>
-          )}
-
-          {session && (
-            <Link href="/profile">
-              <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-5 py-2 rounded-xl">
-                Profile
-              </button>
-            </Link>
-          )}
-
-          {session ? (
-            <button
-              onClick={handleLogout}
-              className="bg-black text-white px-5 py-2 rounded-xl"
-            >
-              Logout
-            </button>
-          ) : (
-            <Link href="/">
-              <button className="bg-black text-white px-5 py-2 rounded-xl">
-                Login
-              </button>
-            </Link>
-          )}
+    <header className="site-header">
+      <nav className="site-nav" aria-label="Main navigation">
+        <Link href="/" className="brand" aria-label="Voluntr home"><span className="brand-mark" aria-hidden="true">v<span>✳</span></span>voluntr<span className="brand-dot">.</span></Link>
+        <div className="nav-links">
+          <Link href="/explore" aria-current={pathname === "/explore" ? "page" : undefined}>Find opportunities</Link>
+          {!session && <Link href="/ngo/signup" className="nav-secondary">For organizations</Link>}
+          {session && <Link href={session.user?.role === "ngo" ? "/dashboard" : "/volunteer/dashboard"}>Dashboard</Link>}
+          {session?.user?.role === "ngo" && <Link href="/create-event" className="nav-secondary">Create event</Link>}
+          {session && <Link href="/profile" className="nav-secondary">Profile</Link>}
         </div>
-      </div>
-    </nav>
+        <div className="nav-actions">
+          {session ? <button className="button button-outline button-small" onClick={() => void signOut({ callbackUrl: "/" })}>Log out</button> : status !== "loading" ? <><Link href="/user/login" className="login-link">Log in</Link><Link href="/user/signup" className="button button-primary button-small">Get involved <span aria-hidden="true">↗</span></Link></> : <span className="text-sm text-gray-500">Loading…</span>}
+        </div>
+      </nav>
+    </header>
   );
 }

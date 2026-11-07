@@ -1,6 +1,7 @@
 "use client";
 
 import axios from "axios";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import OrganizationProfileEditor from "@/components/OrganizationProfileEditor";
 import type { OrganizationProfile } from "@/types/organization";
@@ -49,97 +50,34 @@ export default function ProfilePage() {
     fetchProfile();
   }, [session]);
 
-  if (loading) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <h1 className="text-3xl font-bold text-black">Loading...</h1>
-      </main>
-    );
-  }
+  if (loading) return <><Navbar /><main className="workspace page-container"><p className="eyebrow">YOUR VOLUNTR ACCOUNT</p><div role="status" className="workspace-loading"><span className="sr-only">Loading your profile…</span><div className="loading-card" /></div></main></>;
 
-  if (error || !profile) return <><Navbar /><p role="alert" className="p-10 text-red-700">{error || "Profile not found."}</p></>;
+  if (error || !profile) return <><Navbar /><main className="workspace page-container"><div role="alert" className="workspace-error">{error || "Profile not found."}<button onClick={() => window.location.reload()} className="text-link mt-4 block">Try again ↗</button></div></main></>;
 
-  return (
-    <>
-      <Navbar />
+  const isOrganization = session?.user?.role === "ngo";
+  const events = (isOrganization ? profile.events : profile.enrolledEvents) || [];
 
-      <main className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-blue-50 px-6 py-10">
-        <div className="max-w-4xl mx-auto bg-white p-8 rounded-3xl shadow-xl border border-orange-100">
-          <h1 className="text-4xl font-bold text-black mb-6">My Profile</h1>
-
-          <div className="space-y-3 mb-8">
-            <p className="text-lg text-black">
-              <span className="font-semibold">Name:</span> {profile?.name}
-            </p>
-
-            <p className="text-lg text-black">
-              <span className="font-semibold">Email:</span> {profile?.email}
-            </p>
-
-            {session?.user?.role === "ngo" && (
-              <p className="text-lg text-black">
-                <span className="font-semibold">Description:</span>{" "}
-                {profile?.description || "No description"}
-              </p>
-            )}
-          </div>
-
-          {session?.user?.role === "ngo" ? (
-            <>
-              <OrganizationProfileEditor key={profile._id} initial={profile} onSaved={(updated) => setProfile((previous) => previous ? { ...previous, ...updated } : updated)} />
-              <h2 className="text-2xl font-bold text-black mb-4">
-                Created Events ({profile?.events?.length || 0})
-              </h2>
-
-              {profile?.events?.length === 0 ? (
-                <p className="text-gray-600">No events created yet.</p>
-              ) : (
-                <div className="space-y-4">
-                  {(profile.events || []).map((event) => (
-                    <div
-                      key={event._id}
-                      className="border border-orange-100 rounded-xl p-4"
-                    >
-                      <h3 className="text-xl font-semibold text-black">
-                        {event.title}
-                      </h3>
-
-                      <p className="text-gray-600 mt-2">{event.description}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              <h2 className="text-2xl font-bold text-black mb-4">
-                Enrolled Events ({profile?.enrolledEvents?.length || 0})
-              </h2>
-
-              {profile?.enrolledEvents?.length === 0 ? (
-                <p className="text-gray-600">
-                  You haven&apos;t enrolled in any events yet.
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {(profile.enrolledEvents || []).map((event) => (
-                    <div
-                      key={event._id}
-                      className="border border-orange-100 rounded-xl p-4"
-                    >
-                      <h3 className="text-xl font-semibold text-black">
-                        {event.title}
-                      </h3>
-
-                      <p className="text-gray-600 mt-2">{event.description}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
+  return <>
+    <Navbar />
+    <main className="workspace page-container">
+      <div className="workspace-heading"><div><p className="eyebrow">YOUR SPACE TO MAKE A DIFFERENCE</p><h1>My profile<span>.</span></h1><p>Your details, your community, your next chapter.</p></div><Link href={isOrganization ? "/dashboard" : "/volunteer/dashboard"} className="button button-outline">Back to dashboard ↗</Link></div>
+      <div className="profile-layout">
+        <aside className="profile-summary">
+          <div className="profile-avatar" aria-hidden="true">{profile.name?.trim().charAt(0).toUpperCase() || "V"}</div>
+          <span className="account-label">{isOrganization ? "Organization" : "Volunteer"}</span>
+          <h2>{profile.name}</h2><p className="profile-email">{profile.email}</p>
+          <div className="profile-count"><strong>{events.length}</strong><span>{isOrganization ? "Events created" : "Event enrollments"}</span></div>
+          <p className="profile-note">A little time.<br />A lasting difference.</p>
+          <Link href={isOrganization ? "/create-event" : "/explore"} className="button button-primary">{isOrganization ? "Create an event" : "Find opportunities"} ↗</Link>
+        </aside>
+        <div className="profile-content">
+          <section className="workspace-panel"><div className="panel-heading"><div><p className="eyebrow">THE ESSENTIALS</p><h2>Account details</h2></div><span aria-hidden="true" className="panel-symbol">✳</span></div><dl className="account-details"><div><dt>{isOrganization ? "Organization name" : "Full name"}</dt><dd>{profile.name}</dd></div><div><dt>Email address</dt><dd>{profile.email}</dd></div>{isOrganization && <div className="account-description"><dt>About your organization</dt><dd>{profile.description || "Add your story in the organization profile below."}</dd></div>}</dl></section>
+          {isOrganization && <div className="workspace-panel profile-editor"><OrganizationProfileEditor key={profile._id} initial={profile} onSaved={(updated) => setProfile((previous) => previous ? { ...previous, ...updated } : updated)} /></div>}
+          <section className="workspace-panel"><div className="panel-heading"><div><p className="eyebrow">PART OF YOUR STORY</p><h2>{isOrganization ? "Created events" : "Your enrollments"} <span className="count-badge">{events.length}</span></h2></div></div>
+            {events.length === 0 ? <div className="workspace-empty"><span aria-hidden="true">↟</span><h3>{isOrganization ? "Your first event starts here." : "Your next chapter is waiting."}</h3><p>{isOrganization ? "Bring your community together around a cause that matters." : "Find a cause you care about and turn a little time into something meaningful."}</p><Link href={isOrganization ? "/create-event" : "/explore"} className="button button-primary">{isOrganization ? "Create an event" : "Explore opportunities"} ↗</Link></div> : <div className="profile-event-list">{events.map(event => <Link key={event._id} href={`/explore/${event._id}`} className="profile-event"><div><h3>{event.title}</h3><p>{event.description}</p></div><span aria-hidden="true">↗</span></Link>)}</div>}
+          </section>
         </div>
-      </main>
-    </>
-  );
+      </div>
+    </main>
+  </>;
 }

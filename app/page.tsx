@@ -1,136 +1,58 @@
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
+
+const causes = [
+  { name: "Environment", icon: "↟", description: "A little care. A greener planet.", color: "green" },
+  { name: "Education", icon: "✎", description: "Open doors through learning.", color: "yellow" },
+  { name: "Community", icon: "♡", description: "Show up for your neighborhood.", color: "pink" },
+  { name: "Animal Welfare", icon: "♧", description: "Be a voice for every living thing.", color: "blue" },
+];
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-blue-50 text-black">
-      <nav className="sticky top-0 z-50 flex items-center justify-between px-8 py-5 border-b border-orange-100 bg-white/80 backdrop-blur-md">
-        <h1 className="text-3xl font-extrabold bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent">
-          Voluntr
-        </h1>
-
-        <div className="flex gap-4">
-          <Link href="/user/login">
-            <button className="border border-gray-300 px-5 py-2 rounded-xl hover:bg-gray-50 transition">
-              User Login
-            </button>
-          </Link>
-
-          <Link href="/ngo/login">
-            <button className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-5 py-2 rounded-xl shadow-md hover:scale-105 transition">
-              NGO Login
-            </button>
-          </Link>
-        </div>
-      </nav>
-
-      <section className="max-w-7xl mx-auto px-6 py-24 text-center">
-        <h1 className="text-6xl md:text-7xl font-extrabold leading-tight mb-8">
-          Volunteer for causes
-          <span className="block bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent">
-            that truly matter.
-          </span>
-        </h1>
-
-        <p className="max-w-3xl mx-auto text-xl text-gray-600 leading-9 mb-10">
-          Connect with NGOs, discover meaningful opportunities, participate in
-          impactful events, and help build stronger communities together.
-        </p>
-
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link href="/explore">
-            <button className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-2xl shadow-lg hover:scale-105 transition">
-              Explore Events
-            </button>
-          </Link>
-
-          <Link href="/ngo/signup">
-            <button className="border border-blue-300 bg-blue-50 text-blue-700 px-8 py-4 rounded-2xl hover:bg-blue-100 transition">
-              Organize Events
-            </button>
-          </Link>
-        </div>
-      </section>
-
-      <section className="max-w-6xl mx-auto px-6 pb-24">
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="bg-white p-8 rounded-3xl shadow-md border border-orange-100 text-center">
-            <h2 className="text-5xl font-bold text-orange-500 mb-3">100+</h2>
-            <p className="text-gray-600">Volunteers Connected</p>
+    <>
+      <Navbar />
+      <main id="main-content" className="home-page">
+        <section className="hero page-container">
+          <div className="hero-copy">
+            <p className="eyebrow"><span className="status-dot" /> SMALL ACTIONS. REAL CHANGE.</p>
+            <h1>Your time.<br />Their tomorrow.<br /><span>A better world.</span></h1>
+            <p className="hero-description">Good things happen when we show up. Find meaningful volunteer opportunities and make a difference, right where you belong.</p>
+            <div className="hero-actions"><Link href="/explore" className="button button-primary">Find your opportunity <span aria-hidden="true">↗</span></Link><a href="#how-it-works" className="text-link">See how it works <span aria-hidden="true">↓</span></a></div>
+            <div className="hero-note"><span className="mini-symbols" aria-hidden="true"><i>✳</i><i>♡</i><i>↟</i></span><span>A little of your time.<br /><strong>A world of possibility.</strong></span></div>
           </div>
-
-          <div className="bg-white p-8 rounded-3xl shadow-md border border-orange-100 text-center">
-            <h2 className="text-5xl font-bold text-blue-600 mb-3">50+</h2>
-            <p className="text-gray-600">Community Events</p>
+          <div className="hero-art" role="img" aria-label="Illustration of a thriving green neighborhood with trees, homes and a community garden">
+            <div className="art-topline"><span>GROW TOGETHER</span><span>↗</span></div>
+            <svg viewBox="0 0 520 430" fill="none" aria-hidden="true">
+              <circle cx="390" cy="92" r="49" fill="#EBC86F" />
+              <path d="M0 310Q115 190 245 290Q390 195 520 280V430H0Z" fill="#A9BB87" />
+              <path d="M0 360Q160 250 320 335Q430 280 520 330V430H0Z" fill="#769564" />
+              <path d="M250 430Q340 347 271 284" stroke="#F0E4C6" strokeWidth="45" />
+              <path d="M98 310V160M414 316V188" stroke="#355A3E" strokeWidth="12" strokeLinecap="round" />
+              <path d="M98 255C-5 230 29 132 98 108C158 140 191 221 98 255Z" fill="#426C4B" />
+              <path d="M414 269C338 245 351 179 414 139C485 177 496 249 414 269Z" fill="#315A40" />
+              <path d="M187 283V204H304V283" fill="#F7EDD5" /><path d="M171 205L245 145L320 205Z" fill="#CA7957" />
+              <path d="M233 283V240H258V283" fill="#45674C" /><path d="M204 220H223V241H204Z M270 220H289V241H270Z" fill="#E1B867" />
+              <path d="M49 372L138 347L181 370L92 397Z" fill="#D9B188" /><path d="M62 369L135 351M75 379L148 360" stroke="#8B6549" strokeWidth="3" />
+              <path d="M87 368V340M119 358V332M148 368V344" stroke="#325F40" strokeWidth="4" /><path d="M87 352Q59 332 72 327Q88 329 87 352 M119 344Q142 319 146 331Q141 345 119 344 M148 359Q169 333 172 347Q167 360 148 359" fill="#325F40" />
+              <circle cx="343" cy="293" r="12" fill="#80583E" /><path d="M328 313Q343 303 357 313L363 348H325Z" fill="#EBC86F" /><path d="M334 348L329 378M352 348L359 378" stroke="#344C38" strokeWidth="8" strokeLinecap="round" /><path d="M329 319L312 339M356 319L372 303" stroke="#80583E" strokeWidth="7" strokeLinecap="round" />
+              <circle cx="199" cy="328" r="11" fill="#B77550" /><path d="M184 348Q199 338 211 348L216 376H182Z" fill="#F5EBD3" /><path d="M190 376L185 404M207 376L213 404" stroke="#344C38" strokeWidth="7" strokeLinecap="round" /><path d="M188 351L171 363" stroke="#B77550" strokeWidth="6" strokeLinecap="round" />
+              <path d="M306 106L311 92L316 106L330 111L316 116L311 130L306 116L292 111Z" fill="#426C4B" />
+              <path d="M145 84Q158 69 173 84M182 105Q195 90 208 105" stroke="#426C4B" strokeWidth="3" strokeLinecap="round" />
+            </svg>
+            <div className="art-caption"><span className="art-heart">♡</span><div><strong>It starts with showing up.</strong><span>Find your people. Make your impact.</span></div></div>
+            <div className="floating-label"><span aria-hidden="true">✳</span> A little help goes a long way</div>
           </div>
-
-          <div className="bg-white p-8 rounded-3xl shadow-md border border-orange-100 text-center">
-            <h2 className="text-5xl font-bold text-green-600 mb-3">20+</h2>
-            <p className="text-gray-600">Partner NGOs</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="max-w-7xl mx-auto px-6 pb-24">
-        <h2 className="text-4xl font-bold text-center mb-14">
-          How Voluntr Works
-        </h2>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-white p-8 rounded-3xl shadow-md border border-orange-100">
-            <div className="text-5xl mb-5">🔍</div>
-
-            <h3 className="text-2xl font-semibold mb-4">
-              Discover Opportunities
-            </h3>
-
-            <p className="text-gray-600 leading-7">
-              Browse volunteer events created by NGOs and find causes that align
-              with your interests.
-            </p>
-          </div>
-
-          <div className="bg-white p-8 rounded-3xl shadow-md border border-orange-100">
-            <div className="text-5xl mb-5">🤝</div>
-
-            <h3 className="text-2xl font-semibold mb-4">Join Events</h3>
-
-            <p className="text-gray-600 leading-7">
-              Register for events, contribute your skills, and collaborate with
-              people making a difference.
-            </p>
-          </div>
-
-          <div className="bg-white p-8 rounded-3xl shadow-md border border-orange-100">
-            <div className="text-5xl mb-5">🌍</div>
-
-            <h3 className="text-2xl font-semibold mb-4">Create Impact</h3>
-
-            <p className="text-gray-600 leading-7">
-              Support meaningful initiatives and help NGOs achieve their mission
-              through community action.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="max-w-5xl mx-auto px-6 pb-24">
-        <div className="bg-gradient-to-r from-orange-500 to-blue-600 rounded-3xl p-12 text-center text-white shadow-xl">
-          <h2 className="text-4xl font-bold mb-4">
-            Ready to Make a Difference?
-          </h2>
-
-          <p className="text-lg mb-8 opacity-90">
-            Join volunteers and organizations working together to create
-            positive change.
-          </p>
-
-          <Link href="/explore">
-            <button className="bg-white text-black px-8 py-4 rounded-2xl font-semibold hover:scale-105 transition">
-              Get Started
-            </button>
-          </Link>
-        </div>
-      </section>
-    </main>
+        </section>
+        <section className="belief-strip"><div className="page-container"><p>More connection.<br /><strong>More possibility.</strong></p><span>Local causes, lasting impact</span><span>Organizations with a purpose</span><span>A community that cares</span></div></section>
+        <section className="causes-section page-container">
+          <div className="section-heading"><div><p className="eyebrow">FIND WHAT MOVES YOU</p><h2>There’s a cause for everyone.</h2></div><Link href="/explore" className="text-link">Explore all opportunities <span aria-hidden="true">↗</span></Link></div>
+          <div className="cause-grid">{causes.map(cause => <Link key={cause.name} href={`/explore?category=${encodeURIComponent(cause.name)}`} className={`cause-card cause-${cause.color}`}><span className="cause-icon" aria-hidden="true">{cause.icon}</span><h3>{cause.name}</h3><p>{cause.description}</p><span className="cause-arrow" aria-hidden="true">↗</span></Link>)}</div>
+        </section>
+        <section id="how-it-works" className="how-section page-container"><div className="section-heading"><div><p className="eyebrow">YOUR NEXT CHAPTER STARTS HERE</p><h2>Doing good. Made simple.</h2></div><p>You bring the heart.<br />We help you find where to start.</p></div><div className="steps-grid">{[{ title: "Find your cause", text: "Explore events by interest, location, and the time you have to give." }, { title: "Make a connection", text: "Get to know the organization and register for an opportunity that fits." }, { title: "Show up. Make a difference.", text: "Put your skills to work, meet good people, and be part of something bigger." }].map((step, index) => <div className="step" key={step.title}><span className="step-number">0{index + 1}</span><h3>{step.title}</h3><p>{step.text}</p></div>)}</div></section>
+        <section className="join-banner page-container"><div><p className="eyebrow">BETTER, TOGETHER</p><h2>Big change starts<br />with a small “I’m in.”</h2><p>Your next meaningful moment could be just around the corner.</p><Link href="/user/signup" className="button button-cream">Count me in <span aria-hidden="true">↗</span></Link></div><span className="banner-flower" aria-hidden="true">✳</span></section>
+      </main>
+      <footer className="site-footer page-container"><Link href="/" className="brand">voluntr.</Link><p>A little time. A lasting difference.</p><Link href="/ngo/login">Organization login ↗</Link></footer>
+    </>
   );
 }
