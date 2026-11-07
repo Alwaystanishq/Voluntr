@@ -1,12 +1,14 @@
 "use client";
 
 import axios from "axios";
+import { EventCover, EventInformation } from "@/components/EventInformation";
+import type { EventDetails } from "@/types/event";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 
-interface EventType {
+interface EventType extends EventDetails {
   _id: string;
   title: string;
   description: string;
@@ -76,15 +78,14 @@ export default function ExplorePage() {
               {events.map((event) => (
                 <Link href={`/explore/${event._id}`} key={event._id}>
                   <div className="bg-white p-6 rounded-2xl shadow-md border border-orange-100 hover:-translate-y-1 hover:shadow-xl transition cursor-pointer">
+                    <EventCover src={event.coverImage} title={event.title} />
                     <h2 className="text-2xl font-bold text-black mb-3">
                       {event.title}
                     </h2>
 
                     <p className="text-gray-600 mb-4">{event.description}</p>
 
-                    <p className="text-sm text-gray-500 mb-6">
-                      {new Date(event.date).toDateString()}
-                    </p>
+                    <EventInformation event={event} compact />
 
                     <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-lg">
                       View Details

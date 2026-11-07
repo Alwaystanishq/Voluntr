@@ -1,6 +1,8 @@
 "use client";
 
 import axios from "axios";
+import { EventCover, EventInformation } from "@/components/EventInformation";
+import type { EventDetails } from "@/types/event";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,7 +11,7 @@ import { signOut, useSession } from "next-auth/react";
 
 import { useEffect, useState } from "react";
 
-interface EventType {
+interface EventType extends EventDetails {
   _id: string;
   title: string;
   description: string;
@@ -137,15 +139,14 @@ export default function DashboardPage() {
                   key={event._id}
                   className="bg-white p-6 rounded-2xl shadow-md border border-orange-100"
                 >
+                  <EventCover src={event.coverImage} title={event.title} />
                   <h2 className="text-2xl font-bold text-black mb-3">
                     {event.title}
                   </h2>
 
                   <p className="text-gray-600 mb-4">{event.description}</p>
 
-                  <p className="text-sm text-gray-500 mb-4">
-                    {new Date(event.date).toDateString()}
-                  </p>
+                  <EventInformation event={event} compact />
 
                   <p className="text-sm font-semibold text-black mb-6">
                     Enrolled Users: {event.enrolledUsers.length}

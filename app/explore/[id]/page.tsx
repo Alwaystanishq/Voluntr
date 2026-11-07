@@ -1,6 +1,8 @@
 "use client";
 
 import axios from "axios";
+import { EventCover, EventInformation } from "@/components/EventInformation";
+import type { EventDetails } from "@/types/event";
 import Navbar from "@/components/Navbar";
 
 import { useParams } from "next/navigation";
@@ -8,7 +10,7 @@ import { useEffect, useState } from "react";
 
 import { useSession } from "next-auth/react";
 
-interface EventType {
+interface EventType extends EventDetails {
   _id: string;
   title: string;
   description: string;
@@ -28,6 +30,12 @@ export default function EventDetailsPage() {
   const [loading, setLoading] = useState(true);
 
   const [enrolled, setEnrolled] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -81,7 +89,7 @@ export default function EventDetailsPage() {
     } catch (error) {
       console.log(error);
 
-      alert("Enrollment failed");
+      alert(axios.isAxiosError(error) ? error.response?.data?.message || "Enrollment failed" : "Enrollment failed");
     }
   };
 
@@ -101,21 +109,23 @@ export default function EventDetailsPage() {
     );
   }
 
+  const closed = now >= new Date(event.registrationDeadline || event.date).getTime();
+  const full = event.capacity != null && event.enrolledUsers.length >= event.capacity;
+
   return (
     <>
       <Navbar />
 
       <main className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-blue-50 px-6 py-10">
         <div className="max-w-4xl mx-auto bg-white p-10 rounded-3xl shadow-xl border border-orange-100">
+          <EventCover src={event.coverImage} title={event.title} />
           <h1 className="text-5xl font-bold text-black mb-6">{event.title}</h1>
 
           <p className="text-gray-700 text-lg leading-8 mb-8">
             {event.description}
           </p>
 
-          <p className="text-gray-500 text-lg mb-4">
-            {new Date(event.date).toDateString()}
-          </p>
+          <EventInformation event={event} />
 
           <p className="text-black font-semibold mb-8">
             Volunteers Enrolled: {event.enrolledUsers.length}
@@ -124,14 +134,14 @@ export default function EventDetailsPage() {
           {session?.user?.role === "user" ? (
             <button
               onClick={handleEnroll}
-              disabled={enrolled}
+              disabled={enrolled || closed || full}
               className={`px-8 py-3 rounded-xl text-lg font-semibold text-white ${
-                enrolled
+                enrolled || closed || full
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-gradient-to-r from-orange-500 to-red-500"
               }`}
             >
-              {enrolled ? "Enrolled" : "Enroll Now"}
+              {enrolled ? "Enrolled" : closed ? "Registration closed" : full ? "Event full" : "Enroll Now"}
             </button>
           ) : (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">

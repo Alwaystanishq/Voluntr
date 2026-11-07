@@ -1,3 +1,4 @@
+import { parseEvent } from "@/lib/event-validation";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
@@ -15,8 +16,8 @@ export async function GET(
     const { id } = await params;
 
     const event = await Event.findById(id)
-      .populate("organization")
-      .populate("enrolledUsers");
+      .populate("organization", "name description")
+      .populate("enrolledUsers", "_id");
 
     if (!event) {
       return NextResponse.json(
@@ -91,10 +92,13 @@ export async function PUT(
       );
     }
 
-    const body = await req.json();
-
-    const updatedEvent = await Event.findByIdAndUpdate(id, body, {
-      new: true,
+    let data;
+    try {
+      data = parseEvent(await req.json(), event.toObject());
+      if (data.capacity != null && Number(data.capacity) < event.enrolledUsers.length) throw new Error("Capacity cannot be below current enrollment.");
+    } catch (error) { return NextResponse.json({ success: false, message: error instanceof Error ? error.message : "Invalid event data" }, { status: 400 }); }
+    const updatedEvent = await Event.findByIdAndUpdate(id, { $set: data }, {
+      new: true, runValidators: true,
     });
 
     return NextResponse.json(

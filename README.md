@@ -14,7 +14,9 @@ A full-stack volunteer event platform built with Next.js, MongoDB, NextAuth, and
 
 ### Event Management
 
-* Create events
+* Create events with location, start/end time, cause category, required skills, capacity, registration deadline, and an HTTPS cover image URL
+* Display event details in exploration cards, event pages, and the NGO dashboard
+* Enforce registration deadlines and volunteer capacity during enrollment
 * Explore all events
 * View event details
 * Edit events
@@ -164,7 +166,6 @@ npm run dev
 # Future Improvements
 
 * Role-based UI
-* Event images
 * Search and filtering
 * Better responsive design
 * Toast notifications
