@@ -17,7 +17,7 @@ A full-stack volunteer event platform built with Next.js, MongoDB, NextAuth, and
 * Create events with location, start/end time, cause category, required skills, capacity, registration deadline, and an HTTPS cover image URL
 * Display event details in exploration cards, event pages, and the NGO dashboard
 * Enforce registration deadlines and volunteer capacity during enrollment
-* Explore all events
+* Explore events with title/NGO search, location/cause/date filters, available spots, sorting, and pagination
 * View event details
 * Edit events
 * Delete events
@@ -166,7 +166,6 @@ npm run dev
 # Future Improvements
 
 * Role-based UI
-* Search and filtering
 * Better responsive design
 * Toast notifications
 * Deployment
@@ -176,3 +175,16 @@ npm run dev
 # Author
 
 Built by Tanishq using Next.js and MongoDB.
+
+## Event search
+
+Explore defaults to upcoming events, sorted by start time, with 12 events per page.
+Filters combine when you select **Search events**; **Reset filters** restores defaults.
+Date ranges include the entire selected end date in the browser’s local timezone.
+Available spots means the event has not started, registration is open, and capacity is not full.
+
+`GET /api/events` accepts `q`, `location`, `category`, `scope` (`upcoming`, `all`, `past`),
+`from` and `to` (ISO timestamps; `to` is exclusive), `available` (`true` or `false`),
+`sort` (`soonest` or `newest`), and `page`. Responses include `pagination` metadata.
+
+Run search/filter validation tests with `node tests/event-filters.test.mjs`.
