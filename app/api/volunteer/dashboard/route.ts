@@ -16,13 +16,14 @@ export async function GET() {
     const user = await User.findById(session.user.id).select("savedEvents");
     if (!user) return Response.json({ message: "Account not found" }, { status: 404 });
     const fields = "title description date endDate location category requiredSkills capacity registrationDeadline coverImage organization";
-    const [enrolled, saved] = await Promise.all([
+    const [enrolled, saved, waitlisted] = await Promise.all([
       Event.find({ enrolledUsers: session.user.id }).select(fields).populate("organization", "name").lean(),
       Event.find({ _id: { $in: user.savedEvents || [] } }).select(fields).populate("organization", "name").sort({ date: 1 }).lean(),
+      Event.find({ waitlistedUsers: session.user.id, date: { $gt: new Date() } }).select(fields).populate("organization", "name").sort({ date: 1 }).lean(),
     ]);
     // JSON serialization converts Mongo IDs and Dates into the shared client representation.
     const events = JSON.parse(JSON.stringify(enrolled)) as EventDetails[];
-    return Response.json({ ...groupVolunteerEvents(events), saved }, { headers: { "Cache-Control": "private, no-store" } });
+    return Response.json({ ...groupVolunteerEvents(events), saved, waitlisted }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error(error);
     return Response.json({ message: "Could not load your dashboard" }, { status: 500 });

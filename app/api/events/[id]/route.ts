@@ -16,6 +16,7 @@ export async function GET(
     const { id } = await params;
 
     const event = await Event.findById(id)
+      .select("-waitlistedUsers")
       .populate("organization", "name description")
       .populate("enrolledUsers", "_id");
 
@@ -82,7 +83,7 @@ export async function PUT(
       );
     }
 
-    if (event.organization.toString() !== session.user.id) {
+    if (session.user.role !== "ngo" || event.organization.toString() !== session.user.id) {
       return NextResponse.json(
         {
           success: false,
@@ -97,9 +98,28 @@ export async function PUT(
       data = parseEvent(await req.json(), event.toObject());
       if (data.capacity != null && Number(data.capacity) < event.enrolledUsers.length) throw new Error("Capacity cannot be below current enrollment.");
     } catch (error) { return NextResponse.json({ success: false, message: error instanceof Error ? error.message : "Invalid event data" }, { status: 400 }); }
-    const updatedEvent = await Event.findByIdAndUpdate(id, { $set: data }, {
+    const now = new Date();
+    const start = new Date(String(data.date || event.date));
+    const deadline = data.registrationDeadline !== undefined ? data.registrationDeadline : event.registrationDeadline;
+    const capacity = data.capacity !== undefined ? data.capacity : event.capacity;
+    const enrolled = [...event.enrolledUsers];
+    let waiting = [...(event.waitlistedUsers || [])];
+    if (start > now && (!deadline || new Date(String(deadline)) > now)) {
+      const free = capacity == null ? waiting.length : Math.max(0, Number(capacity) - enrolled.length);
+      enrolled.push(...waiting.slice(0, free));
+      waiting = waiting.slice(free);
+    }
+    const updatedEvent = await Event.findOneAndUpdate({
+      _id: id,
+      updatedAt: event.updatedAt,
+      $expr: { $and: [
+        { $eq: [{ $ifNull: ["$enrolledUsers", []] }, event.enrolledUsers || []] },
+        { $eq: [{ $ifNull: ["$waitlistedUsers", []] }, event.waitlistedUsers || []] },
+      ] },
+    }, { $set: { ...data, enrolledUsers: enrolled, waitlistedUsers: waiting } }, {
       new: true, runValidators: true,
     });
+    if (!updatedEvent) return NextResponse.json({ success: false, message: "Enrollment or event details changed. Please reload and try again." }, { status: 409 });
 
     return NextResponse.json(
       {
@@ -154,7 +174,7 @@ export async function DELETE(
       );
     }
 
-    if (event.organization.toString() !== session.user.id) {
+    if (session.user.role !== "ngo" || event.organization.toString() !== session.user.id) {
       return NextResponse.json(
         {
           success: false,

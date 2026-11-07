@@ -26,6 +26,7 @@ const EventSchema = new Schema(
       ref: "Organization",
       required: true,
     },
+    waitlistedUsers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     enrolledUsers: [
       {
         type: Schema.Types.ObjectId,

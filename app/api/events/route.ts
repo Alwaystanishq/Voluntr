@@ -24,6 +24,7 @@ export async function GET(req: Request) {
     const query = conditions.length ? { $and: conditions } : {};
     const [events, total] = await Promise.all([
       Event.find(query)
+        .select("-waitlistedUsers -enrolledUsers")
         .populate("organization", "name description")
         .sort(sort === "newest" ? { createdAt: -1, _id: -1 } : { date: 1, _id: 1 })
         .skip((page - 1) * pageSize).limit(pageSize),

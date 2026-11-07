@@ -201,3 +201,13 @@ Use **Add to calendar** on an upcoming commitment to download an `.ics` file for
 
 The session-protected `/api/volunteer/dashboard` endpoint returns the current volunteer's events.
 `GET`, `PUT`, and `DELETE /api/events/[id]/save` read, save, and remove a bookmark for the signed-in volunteer.
+
+## Enrollment management
+
+- Volunteers enroll or join a full event's waitlist from the event page.
+- Enrollments can be cancelled until the event starts; a waitlist entry can be removed at any time.
+- Vacancies go to the first people on the waitlist while registration is open. Increasing capacity also promotes waiting volunteers.
+- No new enrollment or promotion happens after the registration deadline (or event start if no deadline is set).
+- The volunteer dashboard includes a Waitlist view and cancellation controls; use Refresh dashboard to see promotions.
+- NGO event cards show enrollment, capacity, and waitlist counts.
+- `GET /api/events/[id]/enroll` returns the current volunteer's status and queue position, `POST` enrolls or queues them, and `DELETE` cancels their registration.

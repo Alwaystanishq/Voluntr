@@ -13,7 +13,7 @@ export async function GET(
 
     const { id } = await params;
 
-    const organization = await Organization.findById(id);
+    const organization = await Organization.findById(id).select("-password");
 
     if (!organization) {
       return NextResponse.json(
@@ -35,7 +35,12 @@ export async function GET(
       success: true,
       organization: {
         ...organization.toObject(),
-        events,
+        events: events.map((event: { toObject(): Record<string, unknown> }) => {
+          const details = event.toObject();
+          const waitlistCount = Array.isArray(details.waitlistedUsers) ? details.waitlistedUsers.length : 0;
+          delete details.waitlistedUsers;
+          return { ...details, waitlistCount };
+        }),
       },
     });
   } catch (error) {

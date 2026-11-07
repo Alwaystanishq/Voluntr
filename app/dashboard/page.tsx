@@ -17,6 +17,7 @@ interface EventType extends EventDetails {
   description: string;
   date: string;
   enrolledUsers: string[];
+  waitlistCount?: number;
 }
 
 interface OrganizationType {
@@ -149,9 +150,10 @@ export default function DashboardPage() {
                   <EventInformation event={event} compact />
 
                   <p className="text-sm font-semibold text-black mb-6">
-                    Enrolled Users: {event.enrolledUsers.length}
+                    Enrolled: {event.enrolledUsers.length}{event.capacity != null ? ` / ${event.capacity}` : ""} · Waitlist: {event.waitlistCount || 0}
                   </p>
 
+                  <Link href={`/explore/${event._id}`} className="mb-3 block text-center font-medium text-blue-700 underline">View event</Link>
                   <button
                     onClick={() => handleDelete(event._id)}
                     className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white py-2 rounded-lg"
