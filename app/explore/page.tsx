@@ -88,7 +88,7 @@ export default function ExplorePage() {
   return (
     <>
       <Navbar />
-      <main className="explore-main min-h-screen px-6 py-10">
+      <main id="main-content" className="explore-main min-h-screen px-6 py-10">
         <div className="max-w-7xl mx-auto">
           <div className="explore-intro"><p className="eyebrow mb-3">FIND YOUR NEXT MEANINGFUL MOMENT</p><h1 className="text-4xl font-bold">A little time. A lasting difference.</h1></div>
           <p className="mt-2 mb-8 text-gray-600">Find your people, follow your cause, and make room for a little good.</p>

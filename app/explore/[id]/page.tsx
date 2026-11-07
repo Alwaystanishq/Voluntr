@@ -59,7 +59,7 @@ export default function EventDetailsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50 via-white to-blue-50">
+      <main id="main-content" className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50 via-white to-blue-50">
         <h1 className="text-3xl font-bold text-black">Loading...</h1>
       </main>
     );

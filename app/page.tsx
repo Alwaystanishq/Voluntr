@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import TaglineReveal from "@/components/TaglineReveal";
 
 const causes = [
   { name: "Environment", icon: "↟", description: "A little care. A greener planet.", color: "green" },
@@ -16,9 +17,9 @@ export default function HomePage() {
         <section className="hero page-container">
           <div className="hero-copy">
             <p className="eyebrow"><span className="status-dot" /> SMALL ACTIONS. REAL CHANGE.</p>
-            <h1>Your time.<br />Their tomorrow.<br /><span>A better world.</span></h1>
-            <p className="hero-description">Good things happen when we show up. Find meaningful volunteer opportunities and make a difference, right where you belong.</p>
-            <div className="hero-actions"><Link href="/explore" className="button button-primary">Find your opportunity <span aria-hidden="true">↗</span></Link><a href="#how-it-works" className="text-link">See how it works <span aria-hidden="true">↓</span></a></div>
+            <h1 className="heading-1">Your time.<br />A cause you love.<br /><span>A lasting difference.</span></h1>
+            <p className="hero-description body-3">Good things happen when we show up. Find meaningful volunteer opportunities and make a difference, right where you belong.</p>
+            <div className="hero-actions"><Link href="/explore" className="button button-primary button-md">Find your opportunity <span aria-hidden="true">↗</span></Link></div>
             <div className="hero-note"><span className="mini-symbols" aria-hidden="true"><i>✳</i><i>♡</i><i>↟</i></span><span>A little of your time.<br /><strong>A world of possibility.</strong></span></div>
           </div>
           <div className="hero-art" role="img" aria-label="Illustration of a thriving green neighborhood with trees, homes and a community garden">
@@ -46,11 +47,23 @@ export default function HomePage() {
         </section>
         <section className="belief-strip"><div className="page-container"><p>More connection.<br /><strong>More possibility.</strong></p><span>Local causes, lasting impact</span><span>Organizations with a purpose</span><span>A community that cares</span></div></section>
         <section className="causes-section page-container">
-          <div className="section-heading"><div><p className="eyebrow">FIND WHAT MOVES YOU</p><h2>There’s a cause for everyone.</h2></div><Link href="/explore" className="text-link">Explore all opportunities <span aria-hidden="true">↗</span></Link></div>
-          <div className="cause-grid">{causes.map(cause => <Link key={cause.name} href={`/explore?category=${encodeURIComponent(cause.name)}`} className={`cause-card cause-${cause.color}`}><span className="cause-icon" aria-hidden="true">{cause.icon}</span><h3>{cause.name}</h3><p>{cause.description}</p><span className="cause-arrow" aria-hidden="true">↗</span></Link>)}</div>
+          <div className="section-heading"><div><p className="eyebrow">FIND WHAT MOVES YOU</p><h2 className="heading-3">There’s a cause for everyone.</h2></div><Link href="/explore" className="text-link">Explore all opportunities <span aria-hidden="true">↗</span></Link></div>
+          <div className="cause-grid">{causes.map(cause => <Link key={cause.name} href={`/explore?category=${encodeURIComponent(cause.name)}`} className={`cause-card cause-${cause.color}`}><span className="cause-icon" aria-hidden="true">{cause.icon}</span><h3 className="title-2">{cause.name}</h3><p className="body-6">{cause.description}</p><span className="cause-arrow" aria-hidden="true">↗</span></Link>)}</div>
         </section>
-        <section id="how-it-works" className="how-section page-container"><div className="section-heading"><div><p className="eyebrow">YOUR NEXT CHAPTER STARTS HERE</p><h2>Doing good. Made simple.</h2></div><p>You bring the heart.<br />We help you find where to start.</p></div><div className="steps-grid">{[{ title: "Find your cause", text: "Explore events by interest, location, and the time you have to give." }, { title: "Make a connection", text: "Get to know the organization and register for an opportunity that fits." }, { title: "Show up. Make a difference.", text: "Put your skills to work, meet good people, and be part of something bigger." }].map((step, index) => <div className="step" key={step.title}><span className="step-number">0{index + 1}</span><h3>{step.title}</h3><p>{step.text}</p></div>)}</div></section>
-        <section className="join-banner page-container"><div><p className="eyebrow">BETTER, TOGETHER</p><h2>Big change starts<br />with a small “I’m in.”</h2><p>Your next meaningful moment could be just around the corner.</p><Link href="/user/signup" className="button button-cream">Count me in <span aria-hidden="true">↗</span></Link></div><span className="banner-flower" aria-hidden="true">✳</span></section>
+        <TaglineReveal />
+        <section id="how-it-works" className="how-section page-container"><div className="section-heading"><div><p className="eyebrow">YOUR NEXT CHAPTER STARTS HERE</p><h2 className="heading-3">Doing good. Made simple.</h2></div><p>You bring the heart.<br />We help you find where to start.</p></div><div className="steps-grid">{[{ title: "Find your cause", text: "Explore events by interest, location, and the time you have to give." }, { title: "Make a connection", text: "Get to know the organization and register for an opportunity that fits." }, { title: "Show up. Make a difference.", text: "Put your skills to work, meet good people, and be part of something bigger." }].map((step, index) => <div className="step" key={step.title}><span className="step-number">0{index + 1}</span><h3 className="heading-6">{step.title}</h3><p className="body-3">{step.text}</p></div>)}</div></section>
+        <section className="faq-section page-container" aria-labelledby="faq-title">
+          <div><p className="eyebrow">Before you get involved</p><h2 id="faq-title" className="heading-3">A good place to start.</h2><p className="body-3">A few things to know before finding your next opportunity.</p></div>
+          <div className="faq-list">{[
+            { question: "How do I find an opportunity near me?", answer: "Open Find opportunities and search by city or venue. You can also filter by cause, date, and available spots." },
+            { question: "Do I need an account to browse?", answer: "You can explore events and read their details before creating an account. Sign in when you are ready to register or save an event." },
+            { question: "What should I know before registering?", answer: "Read the event description, time, location, and organization details. Check any requirements listed by the organizer before committing." },
+            { question: "Can I find online opportunities?", answer: "Use the location search to look for online events, then check the event details to confirm how to take part." },
+            { question: "Where can I see my registrations?", answer: "Sign in to your volunteer account and open your dashboard to keep track of the events you have joined." },
+            { question: "How can my organization get involved?", answer: "Create an organization account to set up your profile and manage your volunteer events from your dashboard." },
+          ].map(item => <details key={item.question}><summary className="title-3">{item.question}<span aria-hidden="true">+</span></summary><p className="body-3">{item.answer}</p></details>)}</div>
+        </section>
+        <section className="join-banner page-container"><div><p className="eyebrow">BETTER, TOGETHER</p><h2 className="heading-3">Big change starts<br />with a small “I’m in.”</h2><p>Your next meaningful moment could be just around the corner.</p><Link href="/explore" className="button button-cream">Find your opportunity <span aria-hidden="true">↗</span></Link></div><span className="banner-flower" aria-hidden="true">✳</span></section>
       </main>
       <footer className="site-footer page-container"><Link href="/" className="brand">voluntr.</Link><p>A little time. A lasting difference.</p><Link href="/ngo/login">Organization login ↗</Link></footer>
     </>

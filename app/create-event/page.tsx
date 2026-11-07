@@ -70,7 +70,7 @@ export default function CreateEventPage() {
     <>
       <Navbar />
 
-      <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50 via-white to-blue-50 px-4 py-10">
+      <main id="main-content" className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50 via-white to-blue-50 px-4 py-10">
         <div className="w-full max-w-2xl bg-white p-8 rounded-3xl shadow-xl border border-orange-100">
           <h1 className="text-4xl font-bold text-center mb-2 bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent">
             Create Event

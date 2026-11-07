@@ -9,11 +9,15 @@ export default function UserSignupPage() {
   const router = useRouter();
 
   const [name, setName] = useState("");
+  const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
+    setPending(true);
 
     try {
       const res = await axios.post("/api/users", {
@@ -26,26 +30,30 @@ export default function UserSignupPage() {
         router.push("/user/login");
       }
     } catch (error) {
-      console.log(error);
-      alert(axios.isAxiosError(error) ? error.response?.data?.message || "Signup failed" : "Signup failed");
+
+      setError(axios.isAxiosError(error) ? error.response?.data?.message || "Could not create your account. Please try again." : "Could not create your account. Please try again.");
+    } finally {
+      setPending(false);
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50 via-white to-blue-50 px-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-xl border border-orange-100">
-        <h1 className="text-4xl font-bold text-center mb-2 bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent">
-          User Sign Up
+    <main id="main-content" className="auth-page">
+      <div className="auth-card">
+        <Link href="/" className="brand auth-brand">voluntr<span className="brand-dot">.</span></Link>
+        <h1 className="heading-4">
+          Make room for good
         </h1>
 
         <p className="text-center text-gray-600 mb-8">
           Create your volunteer account.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="auth-form">
+          {error && <p role="alert" className="workspace-error">{error}</p>}
           <input
             type="text"
-            placeholder="Name"
+            aria-label="Name" placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black placeholder:text-gray-500 outline-none focus:border-orange-400"
@@ -54,7 +62,7 @@ export default function UserSignupPage() {
 
           <input
             type="email"
-            placeholder="Email"
+            aria-label="Email" placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black placeholder:text-gray-500 outline-none focus:border-orange-400"
@@ -64,7 +72,7 @@ export default function UserSignupPage() {
           <input
             type="password"
             minLength={8}
-            placeholder="Password"
+            aria-label="Password" placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black placeholder:text-gray-500 outline-none focus:border-orange-400"
@@ -73,9 +81,10 @@ export default function UserSignupPage() {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 rounded-xl font-semibold hover:scale-[1.02] transition"
+            disabled={pending} aria-busy={pending}
+            className="button button-primary"
           >
-            Sign Up
+            {pending ? "Creating account…" : "Create account"}
           </button>
         </form>
 
@@ -83,9 +92,9 @@ export default function UserSignupPage() {
           Already have an account?{" "}
           <Link
             href="/user/login"
-            className="text-orange-500 font-semibold hover:underline"
+            className="text-link"
           >
-            Login
+            {pending ? "Signing in…" : "Log in"}
           </Link>
         </p>
       </div>

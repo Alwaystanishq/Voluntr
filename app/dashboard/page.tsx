@@ -93,7 +93,7 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading) return <><Navbar /><main className="workspace page-container"><p className="eyebrow mb-6">YOUR COMMUNITY, IN MOTION</p><div role="status"><span className="sr-only">Loading your dashboard…</span><div className="loading-grid" aria-hidden="true">{[1,2,3].map(item => <div className="loading-card" key={item} />)}</div></div></main></>;
+  if (loading) return <><Navbar /><main id="main-content" className="workspace page-container"><p className="eyebrow mb-6">YOUR COMMUNITY, IN MOTION</p><div role="status"><span className="sr-only">Loading your dashboard…</span><div className="loading-grid" aria-hidden="true">{[1,2,3].map(item => <div className="loading-card" key={item} />)}</div></div></main></>;
 
   return (
     <>

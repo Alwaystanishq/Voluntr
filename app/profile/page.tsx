@@ -50,7 +50,7 @@ export default function ProfilePage() {
     fetchProfile();
   }, [session]);
 
-  if (loading) return <><Navbar /><main className="workspace page-container"><p className="eyebrow">YOUR VOLUNTR ACCOUNT</p><div role="status" className="workspace-loading"><span className="sr-only">Loading your profile…</span><div className="loading-card" /></div></main></>;
+  if (loading) return <><Navbar /><main id="main-content" className="workspace page-container"><p className="eyebrow">YOUR VOLUNTR ACCOUNT</p><div role="status" className="workspace-loading"><span className="sr-only">Loading your profile…</span><div className="loading-card" /></div></main></>;
 
   if (error || !profile) return <><Navbar /><main className="workspace page-container"><div role="alert" className="workspace-error">{error || "Profile not found."}<button onClick={() => window.location.reload()} className="text-link mt-4 block">Try again ↗</button></div></main></>;
 

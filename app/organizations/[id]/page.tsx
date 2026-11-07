@@ -35,7 +35,7 @@ export default function OrganizationPage() {
   const events = groupVolunteerEvents(organization?.events || [], now);
   const visible = showPast ? events.past : events.upcoming;
 
-  return <><Navbar /><main className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-blue-50 px-4 py-10 sm:px-6"><div className="mx-auto max-w-6xl">
+  return <><Navbar /><main id="main-content" className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-blue-50 px-4 py-10 sm:px-6"><div className="mx-auto max-w-6xl">
     {loading ? <p role="status" className="py-12 text-center text-gray-700">Loading NGO profile…</p> : error ? <div role="alert" className="rounded-xl bg-red-50 p-5 text-red-700"><p>{error}</p><button onClick={() => setRevision((value) => value + 1)} className="mt-3 underline">Try again</button></div> : organization && <>
       <section className="mb-8 rounded-3xl border border-orange-100 bg-white p-6 shadow-sm sm:p-10">
         <div className="flex flex-wrap items-center gap-5">

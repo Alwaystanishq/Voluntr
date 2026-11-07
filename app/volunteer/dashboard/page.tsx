@@ -63,7 +63,7 @@ export default function VolunteerDashboard() {
 
   return <>
     <Navbar />
-    <main className="workspace dashboard-workspace page-container">
+    <main id="main-content" className="workspace dashboard-workspace page-container">
       <div className="mx-auto max-w-7xl">
         <div className="workspace-heading">
           <div>
