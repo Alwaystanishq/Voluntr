@@ -8,7 +8,8 @@ export async function POST(req: Request) {
   try {
     await connectDB();
     const { email, password } = await req.json();
-    const user = await User.findOne({ email });
+    if (typeof email !== "string" || typeof password !== "string") return NextResponse.json({ success: false, message: "Invalid credentials" }, { status: 400 });
+    const user = await User.findOne({ email: email.trim().toLowerCase() }).select("+password");
     if (!user) {
       return NextResponse.json(
         {
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       message: "Login successful",
-      user,
+      user: { _id: user._id, name: user.name, email: user.email },
     });
   } catch (error) {
     console.log(error);

@@ -1,12 +1,12 @@
 import bcrypt from "bcryptjs";
-import NextAuth from "next-auth";
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/user";
 import Organization from "@/models/organiztion";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -20,8 +20,8 @@ export const authOptions = {
         await connectDB();
 
         const user = await User.findOne({
-          email: credentials?.email,
-        });
+          email: credentials?.email?.trim().toLowerCase(),
+        }).select("+password");
 
         if (user) {
           const isPasswordCorrect = await bcrypt.compare(
@@ -42,8 +42,8 @@ export const authOptions = {
         }
 
         const organization = await Organization.findOne({
-          email: credentials?.email,
-        });
+          email: credentials?.email?.trim().toLowerCase(),
+        }).select("+password");
 
         if (organization) {
           const isPasswordCorrect = await bcrypt.compare(
@@ -69,7 +69,7 @@ export const authOptions = {
   ],
 
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -78,7 +78,7 @@ export const authOptions = {
       return token;
     },
 
-    async session({ session, token }: any) {
+    async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id;
         session.user.role = token.role;

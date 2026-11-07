@@ -15,6 +15,5 @@ export const config = {
     "/admin/:path*",
     "/volunteer/:path*",
     "/create-event",
-    "/edit-event/:path*",
   ],
 };

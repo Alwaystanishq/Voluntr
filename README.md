@@ -19,7 +19,6 @@ A full-stack volunteer event platform built with Next.js, MongoDB, NextAuth, and
 * Enforce registration deadlines and volunteer capacity during enrollment
 * Explore events with title/NGO search, location/cause/date filters, available spots, sorting, and pagination
 * View event details
-* Edit events
 * Delete events
 * Enroll in events
 * Prevent duplicate enrollments
@@ -27,7 +26,6 @@ A full-stack volunteer event platform built with Next.js, MongoDB, NextAuth, and
 ### NGO Dashboard
 
 * View created events
-* Edit events
 * Delete events
 * View enrolled users count
 
@@ -54,30 +52,24 @@ A full-stack volunteer event platform built with Next.js, MongoDB, NextAuth, and
 
 # Folder Structure
 
-```bash
+```text
 app/
- ├── api/
- ├── dashboard/
- ├── explore/
+ ├── api/                 # Auth, accounts, events, bookmarks, verification
+ ├── admin/organizations/ # NGO verification reviews
  ├── create-event/
- ├── edit-event/
+ ├── dashboard/           # NGO dashboard
+ ├── explore/
  ├── ngo/
+ ├── organizations/[id]/  # Public NGO trust profiles
+ ├── profile/
  ├── user/
+ ├── volunteer/dashboard/
  └── page.tsx
-
-components/
- └── Navbar.tsx
-
-lib/
- └── mongodb.ts
-
-models/
- ├── user.ts
- ├── organization.ts
- └── event.ts
-
-providers/
- └── SessionProvider.tsx
+components/              # Shared navigation, event and profile controls
+lib/                     # Database, validation, enrollment and access helpers
+models/                  # User, NGO and event schemas
+providers/               # Session provider
+types/                   # Shared TypeScript types
 ```
 
 ---
@@ -96,13 +88,9 @@ git clone <your-repo-url>
 npm install
 ```
 
-## Create `.env` file
+## Configure the environment
 
-```env
-MONGODB_URI=your_mongodb_uri
-NEXTAUTH_SECRET=your_secret
-NEXTAUTH_URL=http://localhost:3000
-```
+Copy `.env.example` to `.env` and fill in your MongoDB connection string, a long random `NEXTAUTH_SECRET`, and the app URL. Optionally set `ADMIN_USER_IDS` to enable NGO verification reviewers. Keep `.env` out of Git.
 
 ## Run development server
 
@@ -124,7 +112,13 @@ npm run dev
 
 ```bash
 /api/users
+/api/users/[id]
 ```
+
+`POST /api/users` is public signup. User listing is unavailable (`GET /api/users` returns 405).
+Reading, updating or deleting `/api/users/[id]` requires a signed-in volunteer accessing their own account.
+Updates accept only `name`; password, email, roles, saved events and MongoDB operators cannot be changed through this endpoint.
+Account responses never include password hashes.
 
 ## Organizations
 
@@ -134,6 +128,8 @@ npm run dev
 ```
 
 ## Events
+
+Events support creation, discovery, enrollment management and deletion. Event editing is unavailable; `PUT /api/events/[id]` returns 405.
 
 ```bash
 /api/events
@@ -152,20 +148,22 @@ npm run dev
 * User Login
 * NGO Signup
 * NGO Login
+* NGO public profile (`/organizations/[id]`)
 
 ## Protected Pages
 
 * Explore Events
 * Event Details
 * Create Event
-* Edit Event
 * NGO Dashboard
+* Volunteer Dashboard
+* My Profile
+* NGO verification review queue (configured admins only)
 
 ---
 
 # Future Improvements
 
-* Role-based UI
 * Better responsive design
 * Toast notifications
 * Deployment
@@ -187,7 +185,6 @@ Available spots means the event has not started, registration is open, and capac
 `from` and `to` (ISO timestamps; `to` is exclusive), `available` (`true` or `false`),
 `sort` (`soonest` or `newest`), and `page`. Responses include `pagination` metadata.
 
-Run search/filter validation tests with `node tests/event-filters.test.mjs`.
 
 ## Volunteer dashboard
 
@@ -206,7 +203,7 @@ The session-protected `/api/volunteer/dashboard` endpoint returns the current vo
 
 - Volunteers enroll or join a full event's waitlist from the event page.
 - Enrollments can be cancelled until the event starts; a waitlist entry can be removed at any time.
-- Vacancies go to the first people on the waitlist while registration is open. Increasing capacity also promotes waiting volunteers.
+- Vacancies go to the first people on the waitlist while registration is open.
 - No new enrollment or promotion happens after the registration deadline (or event start if no deadline is set).
 - The volunteer dashboard includes a Waitlist view and cancellation controls; use Refresh dashboard to see promotions.
 - NGO event cards show enrollment, capacity, and waitlist counts.

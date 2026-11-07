@@ -27,7 +27,7 @@ export default function UserSignupPage() {
       }
     } catch (error) {
       console.log(error);
-      alert("Signup failed");
+      alert(axios.isAxiosError(error) ? error.response?.data?.message || "Signup failed" : "Signup failed");
     }
   };
 
@@ -63,6 +63,7 @@ export default function UserSignupPage() {
 
           <input
             type="password"
+            minLength={8}
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
