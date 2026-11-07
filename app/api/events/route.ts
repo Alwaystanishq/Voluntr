@@ -1,3 +1,4 @@
+import { readEventCache, writeEventCache, invalidateEventCache } from "@/lib/event-cache";
 import { literalPattern, parseEventFilters } from "@/lib/event-filters";
 import Organization from "@/models/organiztion";
 import { getServerSession } from "next-auth";
@@ -13,6 +14,8 @@ export async function GET(req: Request) {
   try { filters = parseEventFilters(new URL(req.url).searchParams); }
   catch (error) { return NextResponse.json({ success: false, message: error instanceof Error ? error.message : "Invalid filters" }, { status: 400 }); }
   try {
+    const cached = await readEventCache(new URL(req.url).searchParams);
+    if (cached.value) return NextResponse.json(cached.value, { headers: { "X-Event-Cache": "HIT", "Cache-Control": "no-store" } });
     await connectDB();
 
     const { q, page, sort, conditions, pageSize } = filters;
@@ -31,16 +34,13 @@ export async function GET(req: Request) {
       Event.countDocuments(query),
     ]);
 
-    return NextResponse.json(
-      {
-        success: true,
-        events,
-        pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
-      },
-      {
-        status: 200,
-      },
-    );
+    const payload = {
+      success: true,
+      events,
+      pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
+    };
+    await writeEventCache(cached.key, payload);
+    return NextResponse.json(payload, { headers: { "X-Event-Cache": cached.key ? "MISS" : "BYPASS", "Cache-Control": "no-store" } });
   } catch (error) {
     console.log(error);
 
@@ -67,6 +67,7 @@ export async function POST(req: Request) {
     try { data = parseEvent(await req.json()); }
     catch (error) { return NextResponse.json({ success: false, message: error instanceof Error ? error.message : "Invalid event data" }, { status: 400 }); }
     const event = await Event.create({ ...data, organization: session.user.id });
+    await invalidateEventCache();
 
     return NextResponse.json(
       {

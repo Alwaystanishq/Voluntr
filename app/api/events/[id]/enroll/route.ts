@@ -1,3 +1,4 @@
+import { invalidateEventCache } from "@/lib/event-cache";
 import { getServerSession } from "next-auth";
 import { isValidObjectId } from "mongoose";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -21,6 +22,7 @@ async function handle(context: Context, action: "read" | "join" | "leave") {
       return Response.json(enrollmentStatus(event, session.user.id), { headers: { "Cache-Control": "private, no-store" } });
     }
     const result = await updateEnrollment(id, session.user.id, action);
+    await invalidateEventCache();
     return Response.json({ success: true, ...result }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     if (error instanceof EnrollmentError) return Response.json({ message: error.message }, { status: error.status });

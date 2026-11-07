@@ -224,3 +224,37 @@ ADMIN_USER_IDS=trusted_account_mongodb_id
 ```
 
 Reviewers should confirm registration evidence and the organization's website before approving. A verified badge records this review; past event counts reflect event history, not independently verified impact.
+
+## Redis event search cache
+
+The `redis` Node.js dependency connects to a separate Redis server. Set `REDIS_URL` in `.env` and restart the app:
+
+```env
+REDIS_URL=redis://127.0.0.1:6379
+```
+
+For a hosted server, use the provider's connection URL (`rediss://` for TLS). Leave `REDIS_URL` empty to disable caching.
+
+Successful `/api/events` searches are cached for 15 seconds, including filters, sorting, pagination and result counts. Event creation/deletion, enrollment changes, and NGO profile/verification changes invalidate cached searches. Time-based results may lag by up to 15 seconds. Enrollment availability is always checked against MongoDB when joining.
+
+Redis failures fall back to MongoDB; the cache never stores account data, volunteer lists, passwords or verification evidence. Responses include `X-Event-Cache: HIT`, `MISS`, or `BYPASS` for inspection in browser developer tools. No Redis rate limiting is enabled.
+
+## Docker
+
+Copy `.env.example` to `.env` if needed, set `NEXTAUTH_SECRET`, and keep `NEXTAUTH_URL=http://localhost:3000`.
+
+Start the app, MongoDB, and Redis:
+
+```bash
+docker compose up --build
+```
+
+Open **http://localhost:3000**. To stop everything:
+
+```bash
+docker compose down
+```
+
+The Dockerfile installs dependencies, builds Next.js, and runs `npm start` in a single image. Compose loads `.env` at runtime and uses its own MongoDB and Redis containers. `.env` is excluded from the image.
+
+MongoDB data persists in a named volume; your existing database is not imported. Redis is a temporary cache and can start empty. Database ports are not exposed to the host. Image builds need network access for dependencies and Google Fonts.

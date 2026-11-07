@@ -1,3 +1,4 @@
+import { invalidateEventCache } from "@/lib/event-cache";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
@@ -93,6 +94,7 @@ export async function DELETE(
     }
 
     await Event.findByIdAndDelete(id);
+    await invalidateEventCache();
 
     return NextResponse.json(
       {

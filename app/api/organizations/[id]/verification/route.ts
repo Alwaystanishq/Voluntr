@@ -1,3 +1,4 @@
+import { invalidateEventCache } from "@/lib/event-cache";
 import { getServerSession } from "next-auth";
 import { isValidObjectId } from "mongoose";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -18,6 +19,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     if (!organization.website || !organization.mission || !organization.registrationNumber || !organization.verificationDocument) return Response.json({ message: "Add your mission, website, registration number and a supporting document URL, then save before requesting review." }, { status: 400 });
     const result = await Organization.updateOne({ _id: id, updatedAt: organization.updatedAt }, { $set: { verificationStatus: "pending", verificationRequestedAt: new Date(), verificationNote: "", verifiedAt: null } });
     if (!result.modifiedCount) return Response.json({ message: "Profile changed. Reload and try again." }, { status: 409 });
+    await invalidateEventCache();
     return Response.json({ message: "Verification requested. Your profile is awaiting admin review." });
   } catch (error) {
     console.error(error);

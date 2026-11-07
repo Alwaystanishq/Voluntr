@@ -1,3 +1,4 @@
+import { invalidateEventCache } from "@/lib/event-cache";
 import { isValidObjectId } from "mongoose";
 import { adminSession } from "@/lib/admin";
 import { connectDB } from "@/lib/mongodb";
@@ -19,6 +20,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       $set: { verificationStatus: body.status, verificationNote: body.note.trim(), verifiedAt: body.status === "verified" ? new Date() : null },
     }, { new: true });
     if (!organization) return Response.json({ message: "This request changed or was already reviewed. Refresh the queue." }, { status: 409 });
+    await invalidateEventCache();
     return Response.json({ message: body.status === "verified" ? "Organization verified." : "Request rejected." });
   } catch (error) {
     console.error(error);

@@ -1,3 +1,4 @@
+import { invalidateEventCache } from "@/lib/event-cache";
 import { getServerSession } from "next-auth";
 import { isValidObjectId } from "mongoose";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -89,6 +90,7 @@ export async function PUT(
       $set: { ...data, ...(identityChanged ? { verificationStatus: "unverified", verificationNote: "", verifiedAt: null, verificationRequestedAt: null } : {}) },
     }, { new: true, runValidators: true }).select(`${PUBLIC_ORGANIZATION_FIELDS} ${PRIVATE_ORGANIZATION_FIELDS}`);
     if (!updatedOrganization) return NextResponse.json({ message: "Profile changed. Reload and try again." }, { status: 409 });
+    await invalidateEventCache();
 
     return NextResponse.json({
       success: true,
@@ -123,6 +125,7 @@ export async function DELETE(
     if (session.user.role !== "ngo" || session.user.id !== id) return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     if (!isValidObjectId(id)) return NextResponse.json({ message: "Invalid organization ID" }, { status: 400 });
     await Organization.findByIdAndDelete(id);
+    await invalidateEventCache();
 
     return NextResponse.json({
       success: true,

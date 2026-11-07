@@ -7,12 +7,6 @@ declare global {
   };
 }
 
-const MONGODB_URI = process.env.MONGODB_URI as string;
-
-if (!MONGODB_URI) {
-  throw new Error("Please define MONGODB_URI in .env");
-}
-
 const cached = global.mongoose || { conn: null, promise: null };
 
 if (!global.mongoose) {
@@ -20,16 +14,23 @@ if (!global.mongoose) {
 }
 
 export async function connectDB() {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) throw new Error("Please define MONGODB_URI in the server environment");
   if (cached.conn) {
     return cached.conn;
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
+    cached.promise = mongoose.connect(uri, {
       dbName: "voluntr",
     });
   }
 
-  cached.conn = await cached.promise;
-  return cached.conn;
+  try {
+    cached.conn = await cached.promise;
+    return cached.conn;
+  } catch (error) {
+    cached.promise = null;
+    throw error;
+  }
 }
