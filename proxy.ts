@@ -11,6 +11,8 @@ export const config = {
     "/explore",
     "/explore/:path*",
     "/dashboard",
+    "/profile",
+    "/admin/:path*",
     "/volunteer/:path*",
     "/create-event",
     "/edit-event/:path*",

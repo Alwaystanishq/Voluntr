@@ -17,7 +17,7 @@ export async function GET(
 
     const event = await Event.findById(id)
       .select("-waitlistedUsers")
-      .populate("organization", "name description")
+      .populate("organization", "name description verificationStatus")
       .populate("enrolledUsers", "_id");
 
     if (!event) {

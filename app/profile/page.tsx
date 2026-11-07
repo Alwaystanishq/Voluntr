@@ -2,13 +2,20 @@
 
 import axios from "axios";
 import Navbar from "@/components/Navbar";
+import OrganizationProfileEditor from "@/components/OrganizationProfileEditor";
+import type { OrganizationProfile } from "@/types/organization";
+import type { EventDetails } from "@/types/event";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [error, setError] = useState("");
+  useEffect(() => { if (status === "unauthenticated") router.replace("/user/login"); }, [status, router]);
 
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<(OrganizationProfile & { enrolledEvents?: EventDetails[] }) | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,10 +31,7 @@ export default function ProfilePage() {
         const res = await axios.get(endpoint);
 
         if (session.user.role === "ngo") {
-          setProfile({
-            ...res.data.organization,
-            events: res.data.events,
-          });
+          setProfile(res.data.organization);
         } else {
           setProfile({
             ...res.data.user,
@@ -36,6 +40,7 @@ export default function ProfilePage() {
         }
       } catch (error) {
         console.log(error);
+        setError("Could not load your profile. Please refresh and try again.");
       } finally {
         setLoading(false);
       }
@@ -51,6 +56,8 @@ export default function ProfilePage() {
       </main>
     );
   }
+
+  if (error || !profile) return <><Navbar /><p role="alert" className="p-10 text-red-700">{error || "Profile not found."}</p></>;
 
   return (
     <>
@@ -79,6 +86,7 @@ export default function ProfilePage() {
 
           {session?.user?.role === "ngo" ? (
             <>
+              <OrganizationProfileEditor key={profile._id} initial={profile} onSaved={(updated) => setProfile((previous) => previous ? { ...previous, ...updated } : updated)} />
               <h2 className="text-2xl font-bold text-black mb-4">
                 Created Events ({profile?.events?.length || 0})
               </h2>
@@ -87,7 +95,7 @@ export default function ProfilePage() {
                 <p className="text-gray-600">No events created yet.</p>
               ) : (
                 <div className="space-y-4">
-                  {profile.events.map((event: any) => (
+                  {(profile.events || []).map((event) => (
                     <div
                       key={event._id}
                       className="border border-orange-100 rounded-xl p-4"
@@ -110,11 +118,11 @@ export default function ProfilePage() {
 
               {profile?.enrolledEvents?.length === 0 ? (
                 <p className="text-gray-600">
-                  You haven't enrolled in any events yet.
+                  You haven&apos;t enrolled in any events yet.
                 </p>
               ) : (
                 <div className="space-y-4">
-                  {profile.enrolledEvents.map((event: any) => (
+                  {(profile.enrolledEvents || []).map((event) => (
                     <div
                       key={event._id}
                       className="border border-orange-100 rounded-xl p-4"

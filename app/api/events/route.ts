@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     const [events, total] = await Promise.all([
       Event.find(query)
         .select("-waitlistedUsers -enrolledUsers")
-        .populate("organization", "name description")
+        .populate("organization", "name description verificationStatus")
         .sort(sort === "newest" ? { createdAt: -1, _id: -1 } : { date: 1, _id: 1 })
         .skip((page - 1) * pageSize).limit(pageSize),
       Event.countDocuments(query),

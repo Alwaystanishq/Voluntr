@@ -6,9 +6,11 @@ import { EVENT_CATEGORIES, type EventDetails } from "@/types/event";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import Navbar from "@/components/Navbar";
+import { VerificationBadge } from "@/components/OrganizationIdentity";
+import type { VerificationStatus } from "@/types/organization";
 
 interface EventType extends EventDetails {
-  organization?: { name: string } | null;
+  organization?: { name: string; verificationStatus?: VerificationStatus } | null;
 }
 
 export default function ExplorePage() {
@@ -144,7 +146,7 @@ export default function ExplorePage() {
                   {events.map((event) => <Link href={`/explore/${event._id}`} key={event._id} className="rounded-2xl border border-orange-100 bg-white p-6 shadow-md transition hover:-translate-y-1 hover:shadow-xl">
                     <EventCover src={event.coverImage} title={event.title} />
                     <h2 className="mb-2 text-2xl font-bold text-black">{event.title}</h2>
-                    {event.organization?.name && <p className="mb-3 text-sm font-medium text-blue-700">By {event.organization.name}</p>}
+                    {event.organization?.name && <div className="mb-3 space-y-2"><p className="text-sm font-medium text-blue-700">By {event.organization.name}</p><VerificationBadge status={event.organization.verificationStatus} /></div>}
                     <p className="mb-4 line-clamp-3 text-gray-600">{event.description}</p>
                     <EventInformation event={event} compact />
                     <span className="block rounded-lg bg-blue-600 py-2 text-center text-white">View details</span>

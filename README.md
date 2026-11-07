@@ -211,3 +211,19 @@ The session-protected `/api/volunteer/dashboard` endpoint returns the current vo
 - The volunteer dashboard includes a Waitlist view and cancellation controls; use Refresh dashboard to see promotions.
 - NGO event cards show enrollment, capacity, and waitlist counts.
 - `GET /api/events/[id]/enroll` returns the current volunteer's status and queue position, `POST` enrolls or queues them, and `DELETE` cancels their registration.
+
+## NGO trust profiles and verification
+
+- Public profiles at `/organizations/[id]` show the NGO's logo, mission, description, location, website, verification status, and upcoming/past events.
+- NGOs use **Edit trust profile** on their dashboard (or **Profile**) to update these details. Logos use HTTPS image URLs.
+- Event pages link to the organizer's profile; event listings show verification badges.
+- Owners can submit a verification request after saving a mission, website, registration number, and supporting document URL. Supporting details are returned only to the owner and authorized reviewers; account emails are not shown publicly.
+- Only an administrator can approve a verification badge. Updating the name, website, registration number, or supporting document resets verification and requires a fresh request.
+
+To enable administrative reviews, set `ADMIN_USER_IDS` in the server environment to a comma-separated list of trusted, existing account MongoDB IDs, then restart the server. Sign in with one of those accounts and visit `/admin/organizations` to review pending requests. Reviewers can approve or reject with a reason; rejection notes are visible to the NGO. No accounts receive administrative access by default.
+
+```env
+ADMIN_USER_IDS=trusted_account_mongodb_id
+```
+
+Reviewers should confirm registration evidence and the organization's website before approving. A verified badge records this review; past event counts reflect event history, not independently verified impact.

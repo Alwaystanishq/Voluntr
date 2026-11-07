@@ -19,6 +19,16 @@ const OrganizationSchema = new Schema(
       required: true,
     },
 
+    mission: { type: String, default: "" },
+    website: { type: String, default: "" },
+    logo: { type: String, default: "" },
+    location: { type: String, default: "" },
+    registrationNumber: { type: String, default: "" },
+    verificationDocument: { type: String, default: "" },
+    verificationStatus: { type: String, enum: ["unverified", "pending", "verified", "rejected"], default: "unverified" },
+    verificationRequestedAt: Date,
+    verifiedAt: Date,
+    verificationNote: { type: String, default: "" },
     description: {
       type: String,
       default: "",
@@ -29,7 +39,7 @@ const OrganizationSchema = new Schema(
   },
 );
 
-OrganizationSchema.pre("save", async function (this: any) {
+OrganizationSchema.pre("save", async function () {
   if (!this.isModified("password")) {
     return;
   }

@@ -1,6 +1,9 @@
 "use client";
 
 import axios from "axios";
+import Link from "next/link";
+import { VerificationBadge } from "@/components/OrganizationIdentity";
+import type { VerificationStatus } from "@/types/organization";
 import { EventCover, EventInformation } from "@/components/EventInformation";
 import type { EventDetails } from "@/types/event";
 import Navbar from "@/components/Navbar";
@@ -13,6 +16,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 
 interface EventType extends EventDetails {
+  organization?: { _id: string; name: string; verificationStatus?: VerificationStatus } | null;
   _id: string;
   title: string;
   description: string;
@@ -82,6 +86,10 @@ export default function EventDetailsPage() {
             {event.description}
           </p>
 
+          {event.organization && <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-orange-100 p-4">
+            <Link href={`/organizations/${event.organization._id}`} className="font-semibold text-blue-700 underline">Organized by {event.organization.name}</Link>
+            <VerificationBadge status={event.organization.verificationStatus} />
+          </div>}
           <EventInformation event={event} />
 
           <p className="text-black font-semibold mb-8">

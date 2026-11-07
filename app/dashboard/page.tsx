@@ -113,7 +113,8 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4">
+              <Link href="/profile" className="rounded-xl border border-blue-300 bg-white px-5 py-2 text-blue-700">Edit trust profile</Link>
               <Link href="/create-event">
                 <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-xl">
                   Create Event

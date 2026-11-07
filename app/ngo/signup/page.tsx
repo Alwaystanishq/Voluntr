@@ -29,7 +29,7 @@ export default function NGOSignupPage() {
       }
     } catch (error) {
       console.log(error);
-      alert("Signup failed");
+      alert(axios.isAxiosError(error) ? error.response?.data?.message || "Signup failed" : "Signup failed");
     }
   };
 
@@ -72,7 +72,8 @@ export default function NGOSignupPage() {
 
           <input
             type="password"
-            placeholder="Password"
+            minLength={8}
+            placeholder="Password (at least 8 characters)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black placeholder:text-gray-500 outline-none focus:border-orange-400"
