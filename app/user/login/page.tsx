@@ -21,7 +21,7 @@ export default function UserLoginPage() {
     });
 
     if (res?.ok) {
-      router.push("/explore");
+      router.push("/volunteer/dashboard");
     } else {
       alert("Invalid credentials");
     }

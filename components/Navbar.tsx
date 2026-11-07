@@ -14,19 +14,23 @@ export default function Navbar() {
 
   return (
     <nav className="w-full bg-white shadow-md border-b border-orange-100 px-6 py-4">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
         <Link href="/">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent cursor-pointer">
             Voluntr
           </h1>
         </Link>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           <Link href="/explore">
             <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-xl">
               Explore
             </button>
           </Link>
+
+          {session?.user?.role === "user" && (
+            <Link href="/volunteer/dashboard" className="rounded-xl bg-orange-500 px-5 py-2 text-white">Dashboard</Link>
+          )}
 
           {session?.user?.role === "ngo" && (
             <>

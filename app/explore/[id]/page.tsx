@@ -4,6 +4,7 @@ import axios from "axios";
 import { EventCover, EventInformation } from "@/components/EventInformation";
 import type { EventDetails } from "@/types/event";
 import Navbar from "@/components/Navbar";
+import SaveEventButton from "@/components/SaveEventButton";
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -132,6 +133,8 @@ export default function EventDetailsPage() {
           </p>
 
           {session?.user?.role === "user" ? (
+            <div className="flex flex-wrap items-start gap-3">
+            <SaveEventButton eventId={event._id} />
             <button
               onClick={handleEnroll}
               disabled={enrolled || closed || full}
@@ -143,6 +146,7 @@ export default function EventDetailsPage() {
             >
               {enrolled ? "Enrolled" : closed ? "Registration closed" : full ? "Event full" : "Enroll Now"}
             </button>
+            </div>
           ) : (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
               <p className="text-blue-700 font-semibold">

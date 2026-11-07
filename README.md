@@ -188,3 +188,16 @@ Available spots means the event has not started, registration is open, and capac
 `sort` (`soonest` or `newest`), and `page`. Responses include `pagination` metadata.
 
 Run search/filter validation tests with `node tests/event-filters.test.mjs`.
+
+## Volunteer dashboard
+
+Volunteers land on `/volunteer/dashboard` after login and can access it through **Dashboard** in the navigation.
+The dashboard shows upcoming/ongoing commitments, past enrollments, and saved opportunities.
+Past enrollments do not imply verified attendance or volunteer hours.
+
+Use **Save opportunity** on an event page to bookmark it, and remove bookmarks from the dashboard.
+Bookmarks persist in the volunteer's account and do not reserve a place.
+Use **Add to calendar** on an upcoming commitment to download an `.ics` file for your calendar app.
+
+The session-protected `/api/volunteer/dashboard` endpoint returns the current volunteer's events.
+`GET`, `PUT`, and `DELETE /api/events/[id]/save` read, save, and remove a bookmark for the signed-in volunteer.

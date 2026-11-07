@@ -14,6 +14,8 @@ const UserSchema = new Schema(
       unique: true,
     },
 
+    savedEvents: [{ type: Schema.Types.ObjectId, ref: "Event" }],
+
     password: {
       type: String,
       required: true,
@@ -24,7 +26,7 @@ const UserSchema = new Schema(
   }
 );
 
-UserSchema.pre("save", async function (this: any) {
+UserSchema.pre("save", async function () {
   if (!this.isModified("password")) {
     return;
   }

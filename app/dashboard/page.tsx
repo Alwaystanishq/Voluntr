@@ -40,12 +40,12 @@ export default function DashboardPage() {
     if (!session) return;
 
     if (session.user.role !== "ngo") {
-      router.push("/explore");
+      router.replace("/volunteer/dashboard");
     }
   }, [session, router]);
 
   useEffect(() => {
-    if (!session?.user?.id) return;
+    if (!session?.user?.id || session.user.role !== "ngo") return;
 
     const fetchOrganization = async () => {
       try {
