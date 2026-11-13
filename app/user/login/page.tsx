@@ -1,23 +1,23 @@
 "use client";
 
-import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import AuthShell from "@/components/AuthShell";
+import AuthPasswordField from "@/components/AuthPasswordField";
 
 export default function UserLoginPage() {
   const router = useRouter();
-
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (pending) return;
     setError("");
     setPending(true);
-
     try {
       const res = await signIn("credentials", { email, password, redirect: false });
       if (res?.ok) router.push("/volunteer/dashboard");
@@ -30,56 +30,21 @@ export default function UserLoginPage() {
   };
 
   return (
-    <main id="main-content" className="auth-page">
-      <div className="auth-card">
-        <Link href="/" className="brand auth-brand">voluntr<span className="brand-dot">.</span></Link>
-        <h1 className="heading-4">
-          Welcome back
-        </h1>
-
-        <p className="text-center text-gray-600 mb-8">
-          Welcome back to Voluntr.
-        </p>
-
-        <form onSubmit={handleSubmit} className="auth-form">
-          {error && <p role="alert" className="workspace-error">{error}</p>}
-          <input
-            type="email"
-            aria-label="Email" placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black placeholder:text-gray-500 outline-none focus:border-orange-400"
-            required
-          />
-
-          <input
-            type="password"
-            aria-label="Password" placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-black placeholder:text-gray-500 outline-none focus:border-orange-400"
-            required
-          />
-
-          <button
-            type="submit"
-            disabled={pending} aria-busy={pending}
-            className="button button-primary"
-          >
-            {pending ? "Signing in…" : "Log in"}
+    <AuthShell>
+      <form onSubmit={handleSubmit} className="auth-form">
+        {error && <p role="alert" className="auth-error">{error}</p>}
+        <fieldset disabled={pending}>
+          <div className="auth-field">
+            <label htmlFor="email">Email address</label>
+            <input id="email" name="email" type="email" autoComplete="email" autoCapitalize="none" spellCheck={false} placeholder="you@example.com" value={email} onChange={(event) => setEmail(event.target.value)} required />
+          </div>
+          <AuthPasswordField value={password} onChange={setPassword} />
+          <button type="submit" disabled={pending} aria-busy={pending} className="button button-primary">
+            {pending ? "Logging in…" : "Log in"}
           </button>
-        </form>
-
-        <p className="text-center text-gray-600 mt-6">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/user/signup"
-            className="text-link"
-          >
-            {pending ? "Creating account…" : "Create account"}
-          </Link>
-        </p>
-      </div>
-    </main>
+        </fieldset>
+        <p className="auth-status" role="status">{pending ? "Checking your account…" : ""}</p>
+      </form>
+    </AuthShell>
   );
 }
